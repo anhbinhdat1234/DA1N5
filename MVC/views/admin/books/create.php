@@ -15,14 +15,20 @@ if (isset($_SESSION['success'])) {
         <label for="title" class="form-label">Title:</label>
         <input type="text" class="form-control" id="title" name="title">
     </div>
+
     <div class="mb-3 mt-3">
         <label for="category_id" class="form-label">Category:</label>
+
         <select class="form-control" id="category_id" name="category_id">
             <?php foreach ($categoryPluck as $id => $name): ?>
+
                 <option value="<?= $id ?>"><?= $name ?></option>
+                
             <?php endforeach; ?>
         </select>
+
     </div>
+
     <div class="mb-3 mt-3">
         <label for="author" class="form-label">Author:</label>
         <input type="text" class="form-control" id="author" name="author">
