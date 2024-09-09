@@ -3,7 +3,7 @@
 $action = $_GET['action'] ?? '/';
 
 if (
-    !isset($_SESSION['user'])
+    empty($_SESSION['user'])
     && !in_array($action, ['show-form-login', 'login'])
 ) {
     header('Location: ' . BASE_URL_ADMIN . '&action=show-form-login');
