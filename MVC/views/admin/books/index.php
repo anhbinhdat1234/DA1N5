@@ -36,7 +36,9 @@ if (isset($_SESSION['success'])) {
             <td><?= $book['b_author'] ?></td>
             <td><?= $book['c_name'] ?></td>
             <td><?= $book['b_published_year'] ?></td>
+
             <td><?= date('d/m/Y H:i:s', strtotime($book['b_created_at'])) ?></td>
+            
             <td><?= $book['b_updated_at'] ?></td>
             <td>
                 <a href="<?= BASE_URL_ADMIN . '&action=books-show&id=' . $book['b_id'] ?>"

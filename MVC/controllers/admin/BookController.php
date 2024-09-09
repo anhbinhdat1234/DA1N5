@@ -17,7 +17,7 @@ class BookController
         $view = 'books/index';
         $title = 'Danh sách Book';
         $data = $this->book->getAll();
-
+        
         require_once PATH_VIEW_ADMIN_MAIN;
     }
 
@@ -77,7 +77,7 @@ class BookController
             } else {
                 $data['img_cover'] = null;
             }
-
+            
             $rowCount = $this->book->insert($data);
 
             if ($rowCount > 0) {
