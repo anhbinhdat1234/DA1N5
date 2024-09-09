@@ -19,7 +19,8 @@ class BaseModel
     }
 
     // Hủy kết nối CSDL
-    public function __destruct() {
+    public function __destruct()
+    {
         $this->pdo = null;
     }
 
@@ -33,9 +34,10 @@ class BaseModel
      * 
      * Khi dùng: $obj->select('id, name', 'id > :id AND price > :price', ['id' => 3, 'price' => 36000])
      */
-    public function select($columns = '*', $conditions = null, $params = []) {
+    public function select($columns = '*', $conditions = null, $params = [])
+    {
         $sql = "SELECT $columns FROM {$this->table}";
-        
+
         if ($conditions) {
             $sql .= " WHERE $conditions";
         }
@@ -56,13 +58,14 @@ class BaseModel
      * 
      * Khi dùng: $obj->count('id > :id', ['id' => 5])
      */
-    public function count($conditions = null, $params = []) {
+    public function count($conditions = null, $params = [])
+    {
         $sql = "SELECT COUNT(*) FROM {$this->table}";
-        
+
         if ($conditions) {
             $sql .= " WHERE $conditions";
         }
-        
+
         $stmt = $this->pdo->prepare($sql);
 
         $stmt->execute($params);
@@ -82,9 +85,10 @@ class BaseModel
      * 
      * Khi dùng: $obj->paginate(1, 3, 'id, name', 'id > :id AND price > :price', ['id' => 3, 'price' => 36000])
      */
-    public function paginate($page = 1, $perPage = 5, $columns = '*', $conditions = null, $params = []) {
+    public function paginate($page = 1, $perPage = 5, $columns = '*', $conditions = null, $params = [])
+    {
         $sql = "SELECT $columns FROM {$this->table}";
-        
+
         if ($conditions) {
             $sql .= " WHERE $conditions";
         }
@@ -96,7 +100,7 @@ class BaseModel
         $sql .= " LIMIT $perPage OFFSET $offset";
 
         $stmt = $this->pdo->prepare($sql);
-  
+
         // Chỉ dùng cách này được khi KHÔNG CÓ param của limit và offset
         // Nếu có param của limit và offset thì phải dùng hàm bindParam cho từng param 1.
         $stmt->execute($params);
@@ -114,9 +118,10 @@ class BaseModel
      * 
      * Khi dùng: $obj->find('id, name', 'id > :id AND price > :price', ['id' => 3, 'price' => 36000])
      */
-    public function find($columns = '*', $conditions = null, $params = []) {
+    public function find($columns = '*', $conditions = null, $params = [])
+    {
         $sql = "SELECT $columns FROM {$this->table}";
-        
+
         if ($conditions) {
             $sql .= " WHERE $conditions";
         }
@@ -139,7 +144,8 @@ class BaseModel
      *                          'price' => 50000
      *                       ])
      */
-    public function insert($data) {
+    public function insert($data)
+    {
         $keys = array_keys($data);
 
         $columns = implode(', ', $keys);
@@ -167,15 +173,16 @@ class BaseModel
      *                          'price' => 50000
      *                        ], 'id = :id', ['id' => 1])
      */
-    public function update($data, $conditions = null, $params = []) {
+    public function update($data, $conditions = null, $params = [])
+    {
         $keys = array_keys($data);
 
-        $arraySets = array_map( fn($key) => "$key = :set_$key" , $keys);
+        $arraySets = array_map(fn($key) => "$key = :set_$key", $keys);
 
         $sets = implode(', ', $arraySets);
-        
+
         $sql = "UPDATE {$this->table} SET $sets";
-        
+
         if ($conditions) {
             $sql .= " WHERE $conditions";
         }
@@ -206,9 +213,10 @@ class BaseModel
      * 
      * Khi dùng: $obj->delete('id = :id', ['id' => 1])
      */
-    public function delete($conditions = null, $params = []) {
+    public function delete($conditions = null, $params = [])
+    {
         $sql = "DELETE FROM {$this->table}";
-        
+
         if ($conditions) {
             $sql .= " WHERE $conditions";
         }

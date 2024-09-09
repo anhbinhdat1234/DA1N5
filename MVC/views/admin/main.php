@@ -24,6 +24,9 @@
             <li class="nav-item">
                 <a class="nav-link text-uppercase" href="<?= BASE_URL_ADMIN . '&action=users-index' ?>"><b>Quản lý User</b></a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link text-uppercase" href="<?= BASE_URL_ADMIN . '&action=books-index' ?>"><b>Quản lý Book</b></a>
+            </li>
         </ul>
     </nav>
 
