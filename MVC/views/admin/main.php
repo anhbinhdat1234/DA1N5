@@ -27,6 +27,11 @@
             <li class="nav-item">
                 <a class="nav-link text-uppercase" href="<?= BASE_URL_ADMIN . '&action=books-index' ?>"><b>Quản lý Book</b></a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link text-uppercase text-danger"
+                    href="<?= BASE_URL_ADMIN . '&action=logout' ?>"
+                    onclick="return confirm('Có chắc chắn đăng xuất?')"> <b>Đăng xuất</b> </a>
+            </li>
         </ul>
     </nav>
 

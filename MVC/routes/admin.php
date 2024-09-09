@@ -2,9 +2,21 @@
 
 $action = $_GET['action'] ?? '/';
 
+if (
+    !isset($_SESSION['user'])
+    && !in_array($action, ['show-form-login', 'login'])
+) {
+    header('Location: ' . BASE_URL_ADMIN . '&action=show-form-login');
+    exit();
+}
+
 match ($action) {
     '/'         => (new DashboardController)->index(),
     'test-show' => (new TestController)->show(),
+
+    'show-form-login'       => (new AuthenController)->showFormLogin(),
+    'login'                 => (new AuthenController)->login(),
+    'logout'                => (new AuthenController)->logout(),
 
     // CRUD User
     'users-index'    => (new UserController)->index(),   // Hiển thị danh sách
