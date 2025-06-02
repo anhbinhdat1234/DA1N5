@@ -1,7 +1,7 @@
 <?php
 
-define('BASE_URL',          'http://localhost/PHPOOP-1/MVC/');
-define('BASE_URL_ADMIN',    'http://localhost/PHPOOP-1/MVC/?mode=admin');
+define('BASE_URL',          'http://localhost/DA1_N5/');
+define('BASE_URL_ADMIN',    'http://localhost/DA1_N5/?mode=admin');
 
 define('PATH_ROOT',         __DIR__ . '/../');
 
@@ -26,7 +26,7 @@ define('DB_HOST',     'localhost');
 define('DB_PORT',     '3306');
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
-define('DB_NAME',     'testdb');
+define('DB_NAME',     'da1_n5');
 define('DB_OPTIONS', [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
