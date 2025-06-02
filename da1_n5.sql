@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 14, 2025 at 11:25 AM
+-- Generation Time: Jun 02, 2025 at 12:59 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -43,20 +43,21 @@ CREATE TABLE `cart_items` (
 
 CREATE TABLE `categories` (
   `id` int NOT NULL,
-  `name` varchar(100) NOT NULL
+  `name` varchar(100) NOT NULL,
+  `image_url` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `categories`
 --
 
-INSERT INTO `categories` (`id`, `name`) VALUES
-(1, 'Áo thun'),
-(2, 'Áo sơ mi'),
-(3, 'Quần jeans'),
-(4, 'Quần short'),
-(5, 'Váy'),
-(6, 'Áo khoác');
+INSERT INTO `categories` (`id`, `name`, `image_url`) VALUES
+(1, 'Áo thun', NULL),
+(2, 'Áo sơ mi', NULL),
+(3, 'Quần jeans', NULL),
+(4, 'Quần short', NULL),
+(5, 'Váy', NULL),
+(6, 'Áo khoác', NULL);
 
 -- --------------------------------------------------------
 
@@ -137,7 +138,8 @@ INSERT INTO `products` (`id`, `name`, `price`, `description`, `category_id`, `cr
 (3, 'Váy xòe hoa nhí', '280000.00', 'Phong cách nữ tính, dễ thương', 5, '2025-05-12 20:04:24'),
 (4, 'Áo khoác bomber', '450000.00', 'Chống gió, thời trang', 6, '2025-05-12 20:04:24'),
 (5, 'Áo sơ mi caro', '250000.00', 'Chất liệu kate, không nhăn', 2, '2025-05-12 20:04:24'),
-(6, 'Quần short kaki', '190000.00', 'Mặc thoải mái, dễ phối đồ', 4, '2025-05-12 20:04:24');
+(6, 'Quần short kaki', '190000.00', 'Mặc thoải mái, dễ phối đồ', 4, '2025-05-12 20:04:24'),
+(7, 'Demo Áo Trắng', '100000.00', 'Áo demo trắng basic', 1, '2025-05-30 20:07:01');
 
 -- --------------------------------------------------------
 
@@ -161,7 +163,8 @@ INSERT INTO `product_images` (`id`, `product_id`, `image_url`) VALUES
 (3, 3, 'vay-hoa.jpg'),
 (4, 4, 'ao-khoac-bomber.jpg'),
 (5, 5, 'so-mi-caro.jpg'),
-(6, 6, 'quan-short-kaki.jpg');
+(6, 6, 'quan-short-kaki.jpg'),
+(7, 7, 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkG…');
 
 -- --------------------------------------------------------
 
@@ -205,6 +208,30 @@ CREATE TABLE `shippings` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `sliders`
+--
+
+CREATE TABLE `sliders` (
+  `id` int NOT NULL,
+  `image_url` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `subtitle` varchar(255) DEFAULT NULL,
+  `link` varchar(255) DEFAULT NULL,
+  `sort_order` int NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Dumping data for table `sliders`
+--
+
+INSERT INTO `sliders` (`id`, `image_url`, `title`, `subtitle`, `link`, `sort_order`) VALUES
+(1, 'slider1.jpg', 'Mùa hè rực rỡ', 'Giảm giá đến 50%', 'shop.php?category=summer', 1),
+(2, 'slider2.jpg', 'BST Thu Đông', 'Sẵn sàng cho tiết trời se lạnh', 'shop.php?category=autumn', 2),
+(3, 'slider3.jpg', 'Ưu đãi cuối năm', 'Mua 1 tặng 1', 'shop.php?category=winter', 3);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -224,9 +251,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `address`, `role`, `created_at`) VALUES
-(1, '', 'fatitss12@gmail.com', '$2y$10$x0JpjbbpI5m2qzhUPpKs5.AQnNMYTyMdM9fptnbVjjeC8MyDyOrAe', NULL, NULL, 'user', '2025-05-13 18:55:32'),
-(2, '123', '123123@gmail.com', '$2y$10$x7i7m6am3PvDpJ.nX2FAMunqCnTVNJLL5ybB2kuqoQMuj3eI6l0re', NULL, NULL, 'user', '2025-05-13 19:00:52'),
-(3, 'admin', 'fatitss121@gmail.com', '$2y$10$.v6JlVKI0ZH1YdRm0R/9eee1Ugtpp4gWJOnNQ01GU71mbT9pOgb2C', NULL, NULL, 'user', '2025-05-13 19:04:05');
+(1, '', 'fatitss12@gmail.com', '$2y$10$x0JpjbbpI5m2qzhUPpKs5.AQnNMYTyMdM9fptnbVjjeC8MyDyOrAe', NULL, NULL, 'admin', '2025-05-13 18:55:32'),
+(10, '1', 'fatitss121@gmail.com', '$2y$10$ZM8X6QWASE7rq9.fFEBryezXGJl/qwWn131ME83YE..tE6xajpgWu', NULL, NULL, 'user', '2025-05-23 18:46:54');
 
 --
 -- Indexes for dumped tables
@@ -304,6 +330,12 @@ ALTER TABLE `shippings`
   ADD KEY `order_id` (`order_id`);
 
 --
+-- Indexes for table `sliders`
+--
+ALTER TABLE `sliders`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -354,13 +386,13 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `product_variants`
@@ -375,10 +407,16 @@ ALTER TABLE `shippings`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `sliders`
+--
+ALTER TABLE `sliders`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
