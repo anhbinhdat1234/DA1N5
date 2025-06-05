@@ -13,7 +13,6 @@ class AuthenController
     {
         $view = 'authen/form-login';
         $title = 'Đăng nhập';
-
         require_once PATH_VIEW_ADMIN_MAIN;
     }
 
