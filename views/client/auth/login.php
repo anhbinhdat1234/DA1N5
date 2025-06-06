@@ -2,15 +2,9 @@
     <div class="container d-flex justify-content-center align-items-center" style="margin-top: 100px;">
         <div class="card shadow p-4" style="width: 500%; max-width: 400px;">
             <h2 class="text-center mb-4">Login</h2>
-
             <?php if (isset($error)): ?>
                 <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
-
-            <!--
-                Chỉ định action cho form: khi submit sẽ gọi router với ?action=login
-                (controller sẽ nhận POST và xử lý trong AuthController->login())
-            -->
             <form method="POST" action="<?= BASE_URL ?>?action=login">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
@@ -36,10 +30,6 @@
                 </div>
                 <div class="mt-3 text-center">
                     <span>You do not have an account?</span>
-                    <!--
-                        Link chuyển sang trang register: router sẽ nhận action=register_form
-                        và gọi AuthController->showRegisterForm()
-                    -->
                     <a href="<?= BASE_URL ?>?action=register_form" class="text-primary">Register</a>
                 </div>
                 <br>

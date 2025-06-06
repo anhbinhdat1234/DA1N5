@@ -1,3 +1,8 @@
+<?php
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+?>
 <!DOCTYPE html>
 <html lang="vi" data-bs-theme="light" data-pwa="true">
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
@@ -9,21 +14,21 @@
 	<title>Fashion Store</title>
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<link rel="manifest" href="manifest.json">
-	<link rel="icon" type="image/png" href="<?= BASE_URL ?>/assets/client/assets/app-icons/icon-32x32.png"
+	<link rel="icon" type="image/png" href="<?php echo BASE_URL?>/assets/client/assets/app-icons/icon-32x32.png"
 		sizes="32x32">
-	<link rel="apple-touch-icon" href="<?= BASE_URL ?>/assets/client/assets/app-icons/icon-180x180.png">
-	<script src="<?= BASE_URL ?>/assets/client/assets/js/theme-switcher.js"></script>
-	<link rel="preload" href="<?= BASE_URL ?>/assets/client/assets/fonts/inter-variable-latin.woff2" as="font"
+	<link rel="apple-touch-icon" href="<?php echo BASE_URL?>/assets/client/assets/app-icons/icon-180x180.png">
+	<script src="<?php echo BASE_URL?>/assets/client/assets/js/theme-switcher.js"></script>
+	<link rel="preload" href="<?php echo BASE_URL?>/assets/client/assets/fonts/inter-variable-latin.woff2" as="font"
 		type="font/woff2" crossorigin="">
-	<link rel="preload" href="<?= BASE_URL ?>assets/client/assets/icons/cartzilla-icons.woff2" as="font"
+	<link rel="preload" href="<?php echo BASE_URL?>assets/client/assets/icons/cartzilla-icons.woff2" as="font"
 		type="font/woff2" crossorigin="">
-	<link rel="stylesheet" href="<?= BASE_URL ?>assets/client/assets/icons/cartzilla-icons.min.css">
-	<link rel="stylesheet" href="<?= BASE_URL ?>assets/client/assets/vendor/swiper/swiper-bundle.min.css">
-	<link rel="stylesheet" href="<?= BASE_URL ?>assets/client/assets/vendor/simplebar/simplebar.min.css">
-	<link rel="stylesheet" href="<?= BASE_URL ?>assets/client/assets/vendor/glightbox/glightbox.min.css">
-	<link rel="preload" href="<?= BASE_URL ?>assets/client/assets/css/theme.min.css" as="style">
-	<link rel="preload" href="<?= BASE_URL ?>assets/client/assets/css/theme.rtl.min.css" as="style">
-	<link rel="stylesheet" href="<?= BASE_URL ?>assets/client/assets/css/theme.min.css" id="theme-styles">
+	<link rel="stylesheet" href="<?php echo BASE_URL?>assets/client/assets/icons/cartzilla-icons.min.css">
+	<link rel="stylesheet" href="<?php echo BASE_URL?>assets/client/assets/vendor/swiper/swiper-bundle.min.css">
+	<link rel="stylesheet" href="<?php echo BASE_URL?>assets/client/assets/vendor/simplebar/simplebar.min.css">
+	<link rel="stylesheet" href="<?php echo BASE_URL?>assets/client/assets/vendor/glightbox/glightbox.min.css">
+	<link rel="preload" href="<?php echo BASE_URL?>assets/client/assets/css/theme.min.css" as="style">
+	<link rel="preload" href="<?php echo BASE_URL?>assets/client/assets/css/theme.rtl.min.css" as="style">
+	<link rel="stylesheet" href="<?php echo BASE_URL?>assets/client/assets/css/theme.min.css" id="theme-styles">
 </head>
 
 
@@ -48,34 +53,34 @@
 					<a class="nav-link dropdown-toggle py-1 px-0" href="#" data-bs-toggle="dropdown"
 						aria-haspopup="true" aria-expanded="false" aria-label="Country select: USA">
 						<div class="ratio ratio-1x1" style="width: 20px">
-							<img src="<?= BASE_URL ?>/assets/client/assets/img/flags/en-us.png" alt="USA">
+							<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/en-us.png" alt="USA">
 						</div>
 					</a>
 					<ul class="dropdown-menu fs-sm" style="--cz-dropdown-spacer: .5rem">
 						<li>
 							<a class="dropdown-item" href="#!">
-								<img src="<?= BASE_URL ?>/assets/client/assets/img/flags/en-uk.png"
+								<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/en-uk.png"
 									class="flex-shrink-0 me-2" width="20" alt="United Kingdom">
 								United Kingdom
 							</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#!">
-								<img src="<?= BASE_URL ?>/assets/client/assets/img/flags/fr.png"
+								<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/fr.png"
 									class="flex-shrink-0 me-2" width="20" alt="France">
 								France
 							</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#!">
-								<img src="<?= BASE_URL ?>/assets/client/assets/img/flags/de.png"
+								<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/de.png"
 									class="flex-shrink-0 me-2" width="20" alt="Deutschland">
 								Deutschland
 							</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#!">
-								<img src="<?= BASE_URL ?>/assets/client/assets/img/flags/it.png"
+								<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/it.png"
 									class="flex-shrink-0 me-2" width="20" alt="Italia">
 								Italia
 							</a>
@@ -98,7 +103,7 @@
 			</div>
 
 			<!-- Navbar brand (Logo) -->
-			<a class="navbar-brand fs-2 py-0 m-0 me-auto me-sm-n5" href="<?= BASE_URL ?>">Five Clothes</a>
+			<a class="navbar-brand fs-2 py-0 m-0 me-auto me-sm-n5" href="<?php echo BASE_URL?>">Five Clothes</a>
 
 			<!-- Button group -->
 			<div class="d-flex align-items-center">
@@ -160,11 +165,50 @@
 				</button>
 
 				<!-- Account button visible on screens > 768px wide (md breakpoint) -->
-				<a class="btn btn-icon btn-lg fs-lg btn-outline-secondary border-0 rounded-circle animate-shake d-none d-md-inline-flex" 
-					  href="<?= BASE_URL ?>?action=login_form">
-					<i class="ci-user animate-target"></i>
-					<span class="visually-hidden">Account</span>
-				</a>
+<div class="dropdown d-none d-md-inline-flex">
+    <!-- Nút icon để bật dropdown -->
+    <button
+        class="btn btn-icon btn-lg fs-lg btn-outline-secondary border-0 rounded-circle"
+        type="button"
+        id="accountDropdown"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+    >
+        <i class="ci-user animate-target"></i>
+        <span class="visually-hidden">Account</span>
+    </button>
+
+    <!-- Menu dropdown -->
+    <ul class="dropdown-menu dropdown-menu-end mt-2" aria-labelledby="accountDropdown" style="min-width: 10rem;">
+        <?php if (isset($_SESSION['user'])): ?>
+            <!-- Nếu đã đăng nhập, hiển thị Profile + Logout -->
+            <li>
+                <a class="dropdown-item" href="<?php echo BASE_URL?>?action=profile">
+                    <i class="ci-id-card me-2"></i> Xem Profile
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item text-danger" href="<?php echo BASE_URL?>?action=logout">
+                    <i class="ci-sign-out me-2"></i> Logout
+                </a>
+            </li>
+        <?php else: ?>
+            <!-- Nếu chưa đăng nhập, hiển thị Login + Register -->
+            <li>
+                <a class="dropdown-item" href="<?php echo BASE_URL?>?action=login_form">
+                    <i class="ci-sign-in me-2"></i> Login
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="<?php echo BASE_URL?>?action=register_form">
+                    <i class="ci-user-plus me-2"></i> Register
+                </a>
+            </li>
+        <?php endif; ?>
+    </ul>
+</div>
+
 
 				<!-- Wishlist button visible on screens > 768px wide (md breakpoint) -->
 				<a class="btn btn-icon btn-lg fs-lg btn-outline-secondary border-0 rounded-circle animate-pulse d-none d-md-inline-flex"
@@ -200,34 +244,34 @@
 						<a class="nav-link dropdown-toggle py-1 px-0" href="#" data-bs-toggle="dropdown"
 							aria-haspopup="true" aria-expanded="false" aria-label="Country select: USA">
 							<div class="ratio ratio-1x1" style="width: 20px">
-								<img src="<?= BASE_URL ?>/assets/client/assets/img/flags/en-us.png" alt="USA">
+								<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/en-us.png" alt="USA">
 							</div>
 						</a>
 						<ul class="dropdown-menu fs-sm" style="--cz-dropdown-spacer: .5rem">
 							<li>
 								<a class="dropdown-item" href="#!">
-									<img src="<?= BASE_URL ?>/assets/client/assets/img/flags/en-uk.png"
+									<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/en-uk.png"
 										class="flex-shrink-0 me-2" width="20" alt="United Kingdom">
 									United Kingdom
 								</a>
 							</li>
 							<li>
 								<a class="dropdown-item" href="#!">
-									<img src="<?= BASE_URL ?>/assets/client/assets/img/flags/fr.png"
+									<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/fr.png"
 										class="flex-shrink-0 me-2" width="20" alt="France">
 									France
 								</a>
 							</li>
 							<li>
 								<a class="dropdown-item" href="#!">
-									<img src="<?= BASE_URL ?>/assets/client/assets/img/flags/de.png"
+									<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/de.png"
 										class="flex-shrink-0 me-2" width="20" alt="Deutschland">
 									Deutschland
 								</a>
 							</li>
 							<li>
 								<a class="dropdown-item" href="#!">
-									<img src="<?= BASE_URL ?>/assets/client/assets/img/flags/it.png"
+									<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/it.png"
 										class="flex-shrink-0 me-2" width="20" alt="Italia">
 									Italia
 								</a>
@@ -253,10 +297,10 @@
 						<div class="position-relative d-lg-flex align-items-center justify-content-center">
 							<ul class="navbar-nav position-relative me-xl-n5">
 								<li class="nav-item pb-lg-2 me-lg-n2 me-xl-0">
-									<a class="nav-link" href="<?= BASE_URL ?>">Trang chủ</a>
+									<a class="nav-link" href="<?php echo BASE_URL?>">Trang chủ</a>
 								</li>
 								<li class="nav-item pb-lg-2 me-lg-n2 me-xl-0">
-									<a class="nav-link" href="<?= BASE_URL ?>">Sản phẩm</a>
+									<a class="nav-link" href="<?php echo BASE_URL?>">Sản phẩm</a>
 								</li>
 								<li class="nav-item dropdown pb-lg-2 me-lg-n1 me-xl-0">
 									<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -264,17 +308,16 @@
 										mục</a>
 									<ul class="dropdown-menu" style="--cz-dropdown-spacer: .75rem">
 										<?php
-										foreach (get_categories() as $category) { ?>
+                                        foreach (get_categories() as $category) {?>
 											<li>
 												<a class="dropdown-item"
-													href="<?= BASE_URL . '?mod=client&action=category&id=' . $category['id'] ?>">
-													<?= $category['name'] ?>
+													href="<?php echo BASE_URL . '?mod=client&action=category&id=' . $category['id']?>">
+													<?php echo $category['name']?>
 												</a>
 											</li>
-										<?php } ?>
+										<?php }?>
 									</ul>
 								</li>
-
 							</ul>
 						</div>
 					</div>
