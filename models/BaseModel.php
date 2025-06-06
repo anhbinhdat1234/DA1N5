@@ -23,6 +23,11 @@ class BaseModel
     {
         $this->pdo = null;
     }
+    //Get PDO
+    public function getPdo(): PDO
+    {
+        return $this->pdo;
+    }
 
     /**
      * Hàm lấy danh sách

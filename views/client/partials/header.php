@@ -14,21 +14,21 @@
 	<title>Fashion Store</title>
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<link rel="manifest" href="manifest.json">
-	<link rel="icon" type="image/png" href="<?php echo BASE_URL?>/assets/client/assets/app-icons/icon-32x32.png"
+	<link rel="icon" type="image/png" href="<?php echo BASE_URL ?>/assets/client/assets/app-icons/icon-32x32.png"
 		sizes="32x32">
-	<link rel="apple-touch-icon" href="<?php echo BASE_URL?>/assets/client/assets/app-icons/icon-180x180.png">
-	<script src="<?php echo BASE_URL?>/assets/client/assets/js/theme-switcher.js"></script>
-	<link rel="preload" href="<?php echo BASE_URL?>/assets/client/assets/fonts/inter-variable-latin.woff2" as="font"
+	<link rel="apple-touch-icon" href="<?php echo BASE_URL ?>/assets/client/assets/app-icons/icon-180x180.png">
+	<script src="<?php echo BASE_URL ?>/assets/client/assets/js/theme-switcher.js"></script>
+	<link rel="preload" href="<?php echo BASE_URL ?>/assets/client/assets/fonts/inter-variable-latin.woff2" as="font"
 		type="font/woff2" crossorigin="">
-	<link rel="preload" href="<?php echo BASE_URL?>assets/client/assets/icons/cartzilla-icons.woff2" as="font"
+	<link rel="preload" href="<?php echo BASE_URL ?>assets/client/assets/icons/cartzilla-icons.woff2" as="font"
 		type="font/woff2" crossorigin="">
-	<link rel="stylesheet" href="<?php echo BASE_URL?>assets/client/assets/icons/cartzilla-icons.min.css">
-	<link rel="stylesheet" href="<?php echo BASE_URL?>assets/client/assets/vendor/swiper/swiper-bundle.min.css">
-	<link rel="stylesheet" href="<?php echo BASE_URL?>assets/client/assets/vendor/simplebar/simplebar.min.css">
-	<link rel="stylesheet" href="<?php echo BASE_URL?>assets/client/assets/vendor/glightbox/glightbox.min.css">
-	<link rel="preload" href="<?php echo BASE_URL?>assets/client/assets/css/theme.min.css" as="style">
-	<link rel="preload" href="<?php echo BASE_URL?>assets/client/assets/css/theme.rtl.min.css" as="style">
-	<link rel="stylesheet" href="<?php echo BASE_URL?>assets/client/assets/css/theme.min.css" id="theme-styles">
+	<link rel="stylesheet" href="<?php echo BASE_URL ?>assets/client/assets/icons/cartzilla-icons.min.css">
+	<link rel="stylesheet" href="<?php echo BASE_URL ?>assets/client/assets/vendor/swiper/swiper-bundle.min.css">
+	<link rel="stylesheet" href="<?php echo BASE_URL ?>assets/client/assets/vendor/simplebar/simplebar.min.css">
+	<link rel="stylesheet" href="<?php echo BASE_URL ?>assets/client/assets/vendor/glightbox/glightbox.min.css">
+	<link rel="preload" href="<?php echo BASE_URL ?>assets/client/assets/css/theme.min.css" as="style">
+	<link rel="preload" href="<?php echo BASE_URL ?>assets/client/assets/css/theme.rtl.min.css" as="style">
+	<link rel="stylesheet" href="<?php echo BASE_URL ?>assets/client/assets/css/theme.min.css" id="theme-styles">
 </head>
 
 
@@ -53,34 +53,34 @@
 					<a class="nav-link dropdown-toggle py-1 px-0" href="#" data-bs-toggle="dropdown"
 						aria-haspopup="true" aria-expanded="false" aria-label="Country select: USA">
 						<div class="ratio ratio-1x1" style="width: 20px">
-							<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/en-us.png" alt="USA">
+							<img src="<?php echo BASE_URL ?>/assets/client/assets/img/flags/en-us.png" alt="USA">
 						</div>
 					</a>
 					<ul class="dropdown-menu fs-sm" style="--cz-dropdown-spacer: .5rem">
 						<li>
 							<a class="dropdown-item" href="#!">
-								<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/en-uk.png"
+								<img src="<?php echo BASE_URL ?>/assets/client/assets/img/flags/en-uk.png"
 									class="flex-shrink-0 me-2" width="20" alt="United Kingdom">
 								United Kingdom
 							</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#!">
-								<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/fr.png"
+								<img src="<?php echo BASE_URL ?>/assets/client/assets/img/flags/fr.png"
 									class="flex-shrink-0 me-2" width="20" alt="France">
 								France
 							</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#!">
-								<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/de.png"
+								<img src="<?php echo BASE_URL ?>/assets/client/assets/img/flags/de.png"
 									class="flex-shrink-0 me-2" width="20" alt="Deutschland">
 								Deutschland
 							</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="#!">
-								<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/it.png"
+								<img src="<?php echo BASE_URL ?>/assets/client/assets/img/flags/it.png"
 									class="flex-shrink-0 me-2" width="20" alt="Italia">
 								Italia
 							</a>
@@ -103,7 +103,21 @@
 			</div>
 
 			<!-- Navbar brand (Logo) -->
-			<a class="navbar-brand fs-2 py-0 m-0 me-auto me-sm-n5" href="<?php echo BASE_URL?>">Five Clothes</a>
+			<a class="navbar-brand fs-2 py-0 m-0 me-auto me-sm-n5" href="<?php echo BASE_URL ?>">Five Clothes</a>
+			<form class="d-none d-md-flex ms-3" action="<?php echo BASE_URL ?>" method="get" style="max-width:400px; width:100%;">
+    <input type="hidden" name="action" value="search">
+    <div class="input-group">
+        <input type="text"
+               class="form-control"
+               name="keyword"
+               placeholder="Tìm kiếm sản phẩm..."
+               aria-label="Tìm kiếm sản phẩm"
+               value="<?php echo htmlspecialchars($_GET['keyword'] ?? ''); ?>">
+        <button class="btn btn-outline-secondary" type="submit">
+            <i class="ci-search"></i>
+        </button>
+    </div>
+</form>
 
 			<!-- Button group -->
 			<div class="d-flex align-items-center">
@@ -183,25 +197,25 @@
         <?php if (isset($_SESSION['user'])): ?>
             <!-- Nếu đã đăng nhập, hiển thị Profile + Logout -->
             <li>
-                <a class="dropdown-item" href="<?php echo BASE_URL?>?action=profile">
+                <a class="dropdown-item" href="<?php echo BASE_URL ?>?action=profile">
                     <i class="ci-id-card me-2"></i> Xem Profile
                 </a>
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
-                <a class="dropdown-item text-danger" href="<?php echo BASE_URL?>?action=logout">
+                <a class="dropdown-item text-danger" href="<?php echo BASE_URL ?>?action=logout">
                     <i class="ci-sign-out me-2"></i> Logout
                 </a>
             </li>
         <?php else: ?>
             <!-- Nếu chưa đăng nhập, hiển thị Login + Register -->
             <li>
-                <a class="dropdown-item" href="<?php echo BASE_URL?>?action=login_form">
+                <a class="dropdown-item" href="<?php echo BASE_URL ?>?action=login_form">
                     <i class="ci-sign-in me-2"></i> Login
                 </a>
             </li>
             <li>
-                <a class="dropdown-item" href="<?php echo BASE_URL?>?action=register_form">
+                <a class="dropdown-item" href="<?php echo BASE_URL ?>?action=register_form">
                     <i class="ci-user-plus me-2"></i> Register
                 </a>
             </li>
@@ -218,15 +232,17 @@
 				</a>
 
 				<!-- Cart button -->
-				<button type="button"
-					class="btn btn-icon btn-lg fs-xl btn-outline-secondary position-relative border-0 rounded-circle animate-scale"
-					data-bs-toggle="offcanvas" data-bs-target="#shoppingCart" aria-controls="shoppingCart"
-					aria-label="Shopping cart">
-					<span
-						class="position-absolute top-0 start-100 badge fs-xs text-bg-primary rounded-pill mt-1 ms-n4 z-2"
-						style="--cz-badge-padding-y: .25em; --cz-badge-padding-x: .42em">3</span>
-					<i class="ci-shopping-bag animate-target me-1"></i>
-				</button>
+<a href="<?= BASE_URL ?>?action=view_cart"
+   class="btn btn-icon btn-lg fs-xl btn-outline-secondary position-relative border-0 rounded-circle animate-scale"
+   aria-label="Giỏ hàng">
+    <span
+        class="position-absolute top-0 start-100 badge fs-xs text-bg-primary rounded-pill mt-1 ms-n4 z-2"
+        style="--cz-badge-padding-y: .25em; --cz-badge-padding-x: .42em">
+        <?= $cartItemCount ?? '0' /* hoặc hiện số lượng từ $_SESSION */ ?>
+    </span>
+    <i class="ci-shopping-bag animate-target me-1"></i>
+</a>	
+
 			</div>
 		</div>
 
@@ -244,34 +260,34 @@
 						<a class="nav-link dropdown-toggle py-1 px-0" href="#" data-bs-toggle="dropdown"
 							aria-haspopup="true" aria-expanded="false" aria-label="Country select: USA">
 							<div class="ratio ratio-1x1" style="width: 20px">
-								<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/en-us.png" alt="USA">
+								<img src="<?php echo BASE_URL ?>/assets/client/assets/img/flags/en-us.png" alt="USA">
 							</div>
 						</a>
 						<ul class="dropdown-menu fs-sm" style="--cz-dropdown-spacer: .5rem">
 							<li>
 								<a class="dropdown-item" href="#!">
-									<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/en-uk.png"
+									<img src="<?php echo BASE_URL ?>/assets/client/assets/img/flags/en-uk.png"
 										class="flex-shrink-0 me-2" width="20" alt="United Kingdom">
 									United Kingdom
 								</a>
 							</li>
 							<li>
 								<a class="dropdown-item" href="#!">
-									<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/fr.png"
+									<img src="<?php echo BASE_URL ?>/assets/client/assets/img/flags/fr.png"
 										class="flex-shrink-0 me-2" width="20" alt="France">
 									France
 								</a>
 							</li>
 							<li>
 								<a class="dropdown-item" href="#!">
-									<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/de.png"
+									<img src="<?php echo BASE_URL ?>/assets/client/assets/img/flags/de.png"
 										class="flex-shrink-0 me-2" width="20" alt="Deutschland">
 									Deutschland
 								</a>
 							</li>
 							<li>
 								<a class="dropdown-item" href="#!">
-									<img src="<?php echo BASE_URL?>/assets/client/assets/img/flags/it.png"
+									<img src="<?php echo BASE_URL ?>/assets/client/assets/img/flags/it.png"
 										class="flex-shrink-0 me-2" width="20" alt="Italia">
 									Italia
 								</a>
@@ -297,10 +313,10 @@
 						<div class="position-relative d-lg-flex align-items-center justify-content-center">
 							<ul class="navbar-nav position-relative me-xl-n5">
 								<li class="nav-item pb-lg-2 me-lg-n2 me-xl-0">
-									<a class="nav-link" href="<?php echo BASE_URL?>">Trang chủ</a>
+									<a class="nav-link" href="<?php echo BASE_URL ?>">Trang chủ</a>
 								</li>
 								<li class="nav-item pb-lg-2 me-lg-n2 me-xl-0">
-									<a class="nav-link" href="<?php echo BASE_URL?>">Sản phẩm</a>
+									<a class="nav-link" href="<?php echo BASE_URL ?>">Sản phẩm</a>
 								</li>
 								<li class="nav-item dropdown pb-lg-2 me-lg-n1 me-xl-0">
 									<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -311,8 +327,8 @@
                                         foreach (get_categories() as $category) {?>
 											<li>
 												<a class="dropdown-item"
-													href="<?php echo BASE_URL . '?mod=client&action=category&id=' . $category['id']?>">
-													<?php echo $category['name']?>
+													href="<?php echo BASE_URL . '?mod=client&action=category&id=' . $category['id'] ?>">
+													<?php echo $category['name'] ?>
 												</a>
 											</li>
 										<?php }?>

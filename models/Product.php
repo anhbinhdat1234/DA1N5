@@ -128,5 +128,25 @@ public function getProductByCategoryId(?int $categoryId = null, int $limit = 10)
 
         return $product;
     }
-
+public function searchByKeyword(string $keyword): array
+{
+    $sql = "
+        SELECT 
+            p.*,
+            (
+                SELECT image_url
+                FROM product_images
+                WHERE product_id = p.id
+                LIMIT 1
+            ) AS thumbnail
+        FROM {$this->table} p
+        WHERE (p.name LIKE :kw OR p.description LIKE :kw)
+        ORDER BY p.created_at DESC
+    ";
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute([
+        ':kw' => '%' . $keyword . '%'
+    ]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }

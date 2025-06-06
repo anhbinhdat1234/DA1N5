@@ -39,15 +39,20 @@ class AuthController
             // Lưu ý: nên sửa hàm find() trong Model để binding param, tránh SQL injection
             $user = $userModel->find('*', "email = '" . addslashes($email) . "'");
 
-            if ($user && password_verify($password, $user['password'])) {
-                // _Lưu thông tin user vào session_
-                $_SESSION['user'] = [
-                    'id'    => $user['id'],
-                    'name'  => $user['name'],
-                    'email' => $user['email']
-                ];
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user_id']   = $user['id'];
+            $_SESSION['user_name'] = $user['name'];
+
+            // Nếu có redirect_after_login, redirect về URL đó, rồi xóa session
+            if (isset($_SESSION['redirect_after_login'])) {
+                $redirectUrl = $_SESSION['redirect_after_login'];
+                unset($_SESSION['redirect_after_login']);
+                header('Location: ' . $redirectUrl);
+            } else {
+                // Mặc định trở về trang chủ nếu không có redirect
                 header('Location: ' . BASE_URL);
-                exit;
+            }
+            exit;
             } else {
                 $error = 'Email hoặc mật khẩu không đúng';
             }
