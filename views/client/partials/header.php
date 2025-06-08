@@ -14,11 +14,6 @@
   </div>
   <?php unset($_SESSION['flash']); ?>
 <?php endif; ?>
-<?php if (is_admin()): ?>
-  <a href="<?= BASE_URL ?>?action=admin_dashboard" class="btn btn-sm btn-outline-secondary">
-    Quản trị
-  </a>
-<?php endif; ?>
 <!DOCTYPE html>
 <html lang="vi" data-bs-theme="light" data-pwa="true">
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
