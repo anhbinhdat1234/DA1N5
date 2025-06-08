@@ -1,4 +1,5 @@
 <?php
+// views/client/checkout.php
 ?>
 <div class="container py-5">
     <h2 class="mb-4">Thanh toán</h2>
@@ -20,19 +21,32 @@
                 <h5>Thông tin giao hàng</h5>
                 <div class="mb-3">
                     <label class="form-label">Tên người nhận</label>
-                    <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($_POST['name'] ?? '') ?>" required>
+                    <input type="text"
+                           name="name"
+                           class="form-control"
+                           value="<?= htmlspecialchars($_POST['name'] ?? '') ?>"
+                           required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Địa chỉ</label>
-                    <textarea name="address" class="form-control" rows="3" required><?= htmlspecialchars($_POST['address'] ?? '') ?></textarea>
+                    <textarea name="address"
+                              class="form-control"
+                              rows="3"
+                              required><?= htmlspecialchars($_POST['address'] ?? '') ?></textarea>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Số điện thoại</label>
-                    <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>" required>
+                    <input type="text"
+                           name="phone"
+                           class="form-control"
+                           value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>"
+                           required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Ghi chú (tuỳ chọn)</label>
-                    <textarea name="note" class="form-control" rows="2"><?= htmlspecialchars($_POST['note'] ?? '') ?></textarea>
+                    <textarea name="note"
+                              class="form-control"
+                              rows="2"><?= htmlspecialchars($_POST['note'] ?? '') ?></textarea>
                 </div>
             </div>
 
@@ -43,11 +57,14 @@
                     <?php foreach ($cartItems as $item): ?>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
-                                <?= htmlspecialchars($item['product_name']) ?>
-                                <br><small>Màu: <?= htmlspecialchars($item['color']) ?>, <?= htmlspecialchars($item['size']) ?></small>
+                                <?= htmlspecialchars($item['product_name']) ?><br>
+                                <small>
+                                    Màu: <?= htmlspecialchars($item['color']) ?>,
+                                    Size: <?= htmlspecialchars($item['size']) ?>
+                                </small>
                             </div>
                             <span class="badge bg-primary rounded-pill">
-                                <?= htmlspecialchars($item['quantity']) ?> x <?= number_format($item['price'], 0, ',', '.') ?>₫
+                                <?= $item['quantity'] ?> × <?= number_format($item['price'], 0, ',', '.') ?>₫
                             </span>
                         </li>
                     <?php endforeach; ?>
@@ -56,7 +73,9 @@
                         <strong><?= number_format($total, 0, ',', '.') ?>₫</strong>
                     </li>
                 </ul>
-                <button type="submit" class="btn btn-success w-100">Xác nhận và đặt hàng</button>
+                <button type="submit" class="btn btn-success w-100">
+                    Xác nhận và đặt hàng
+                </button>
             </div>
         </div>
     </form>

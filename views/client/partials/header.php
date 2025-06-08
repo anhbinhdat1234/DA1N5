@@ -2,7 +2,23 @@
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
+	$cart = $_SESSION['cart'] ?? [];
+
+	$cartItemCount = is_array($cart)
+    ? array_sum($cart)
+    : 0;
 ?>
+<?php if (!empty($_SESSION['flash'])): ?>
+  <div class="container mt-2">
+    <div class="alert alert-success"><?= htmlspecialchars($_SESSION['flash']) ?></div>
+  </div>
+  <?php unset($_SESSION['flash']); ?>
+<?php endif; ?>
+<?php if (is_admin()): ?>
+  <a href="<?= BASE_URL ?>?action=admin_dashboard" class="btn btn-sm btn-outline-secondary">
+    Quản trị
+  </a>
+<?php endif; ?>
 <!DOCTYPE html>
 <html lang="vi" data-bs-theme="light" data-pwa="true">
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
@@ -193,34 +209,43 @@
     </button>
 
     <!-- Menu dropdown -->
-    <ul class="dropdown-menu dropdown-menu-end mt-2" aria-labelledby="accountDropdown" style="min-width: 10rem;">
-        <?php if (isset($_SESSION['user'])): ?>
-            <!-- Nếu đã đăng nhập, hiển thị Profile + Logout -->
-            <li>
-                <a class="dropdown-item" href="<?php echo BASE_URL ?>?action=profile">
-                    <i class="ci-id-card me-2"></i> Xem Profile
-                </a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-                <a class="dropdown-item text-danger" href="<?php echo BASE_URL ?>?action=logout">
-                    <i class="ci-sign-out me-2"></i> Logout
-                </a>
-            </li>
-        <?php else: ?>
-            <!-- Nếu chưa đăng nhập, hiển thị Login + Register -->
-            <li>
-                <a class="dropdown-item" href="<?php echo BASE_URL ?>?action=login_form">
-                    <i class="ci-sign-in me-2"></i> Login
-                </a>
-            </li>
-            <li>
-                <a class="dropdown-item" href="<?php echo BASE_URL ?>?action=register_form">
-                    <i class="ci-user-plus me-2"></i> Register
-                </a>
-            </li>
+<ul class="dropdown-menu dropdown-menu-end mt-2" aria-labelledby="accountDropdown" style="min-width: 10rem;">
+    <?php if (isset($_SESSION['user'])): ?>
+        <!-- Nếu đã đăng nhập, hiển thị Profile + Logout -->
+        <li>
+            <a class="dropdown-item" href="<?= BASE_URL ?>?action=profile">
+                <i class="ci-id-card me-2"></i> Xem Profile
+            </a>
+        </li>
+        <!-- chỗ này thêm admin -->
+        <?php if (is_admin()): ?>
+        <li>
+            <a class="dropdown-item" href="<?= BASE_URL ?>?action=admin_dashboard">
+                <i class="ci-shield-lock me-2"></i> Quản trị
+            </a>
+        </li>
+        <li><hr class="dropdown-divider"></li>
         <?php endif; ?>
-    </ul>
+        <li>
+            <a class="dropdown-item text-danger" href="<?= BASE_URL ?>?action=logout">
+                <i class="ci-sign-out me-2"></i> Logout
+            </a>
+        </li>
+    <?php else: ?>
+        <!-- Nếu chưa đăng nhập, hiển thị Login + Register -->
+        <li>
+            <a class="dropdown-item" href="<?= BASE_URL ?>?action=login_form">
+                <i class="ci-sign-in me-2"></i> Login
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="<?= BASE_URL ?>?action=register_form">
+                <i class="ci-user-plus me-2"></i> Register
+            </a>
+        </li>
+    <?php endif; ?>
+</ul>
+
 </div>
 
 

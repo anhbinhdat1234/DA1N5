@@ -1,48 +1,32 @@
 <?php
 // controllers/client/CheckoutController.php
 
+require_once __DIR__ . '/../../models/Order.php';
+require_once __DIR__ . '/../../models/OrderItem.php';
+require_once __DIR__ . '/../../models/Shipping.php';
+require_once __DIR__ . '/../../models/Cart.php';
+
 class CheckoutController
 {
-    /**
-     * Hiển thị form thanh toán (checkout)
-     * Nếu chưa login, redirect về login_form và lưu lại URL để redirect ngược về sau.
-     */
+    // Hiển thị form thanh toán
     public function index()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        if (session_status() === PHP_SESSION_NONE) session_start();
 
-        // Nếu user chưa đăng nhập, lưu lại URL và chuyển sang trang login
-        if (!isset($_SESSION['user']['id'])) {
+        if (empty($_SESSION['user']['id'])) {
             $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
             header('Location: ' . BASE_URL . '?action=login_form');
             exit;
         }
 
-        $userId = $_SESSION['user']['id'];
-
-        // Category (dùng để hiển thị menu chung như HomeController)
-        $categoryModel = new Category();
-        $categories = $categoryModel->select();
-
-        // Lấy giỏ hàng của user
-        $cartModel = new Cart();
-        $cartItems = $cartModel->getCartItems($userId);
-
-        // Nếu giỏ trống, redirect về view_cart
+        $userId    = $_SESSION['user']['id'];
+        $cartItems = (new Cart())->getCartItems($userId);
         if (empty($cartItems)) {
             header('Location: ' . BASE_URL . '?mod=client&action=view_cart');
             exit;
         }
 
-        // Tính tổng tiền
-        $total = 0;
-        foreach ($cartItems as $item) {
-            $total += $item['subtotal'];
-        }
-
-        // Mảng errors (nếu trước đó submit gặp lỗi, sẽ lưu trong session)
+        $total  = array_sum(array_column($cartItems, 'subtotal'));
         $errors = $_SESSION['checkout_errors'] ?? [];
         unset($_SESSION['checkout_errors']);
 
@@ -51,139 +35,88 @@ class CheckoutController
         require_once PATH_VIEW_CLIENT . 'partials/footer.php';
     }
 
-    /**
-     * Xử lý dữ liệu POST khi user submit form checkout
-     * Tạo order, order_items, xóa giỏ, redirect sang thank_you
-     */
+    // Xử lý POST đặt hàng
     public function submit()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        if (session_status() === PHP_SESSION_NONE) session_start();
 
-        // Nếu chưa login, chuyển về login_form
-        if (!isset($_SESSION['user']['id'])) {
+        if (empty($_SESSION['user']['id'])) {
             $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
             header('Location: ' . BASE_URL . '?action=login_form');
             exit;
         }
 
-        $userId = $_SESSION['user']['id'];
-        $cartModel = new Cart();
-        $cartItems = $cartModel->getCartItems($userId);
-
-        // Nếu giỏ rỗng, quay về view_cart
+        $userId    = $_SESSION['user']['id'];
+        $cartItems = (new Cart())->getCartItems($userId);
         if (empty($cartItems)) {
             header('Location: ' . BASE_URL . '?mod=client&action=view_cart');
             exit;
         }
 
-        // Lấy dữ liệu từ form
-        $name    = trim($_POST['name']    ?? '');
+        // Lấy dữ liệu
         $address = trim($_POST['address'] ?? '');
         $phone   = trim($_POST['phone']   ?? '');
-        $note    = trim($_POST['note']    ?? '');
 
-        // Validate đơn giản
+        // Validate
         $errors = [];
-        if ($name === '') {
-            $errors[] = 'Vui lòng nhập tên người nhận.';
-        }
-        if ($address === '') {
-            $errors[] = 'Vui lòng nhập địa chỉ giao hàng.';
-        }
-        if ($phone === '') {
-            $errors[] = 'Vui lòng nhập số điện thoại.';
-        }
-
-        if (!empty($errors)) {
+        if ($address === '') $errors[] = 'Vui lòng nhập địa chỉ giao hàng.';
+        if ($phone === '')   $errors[] = 'Vui lòng nhập số điện thoại.';
+        if ($errors) {
             $_SESSION['checkout_errors'] = $errors;
             header('Location: ' . BASE_URL . '?mod=client&action=checkout_form');
             exit;
         }
 
-        // Tính tổng tiền
-        $totalAmount = 0;
-        foreach ($cartItems as $item) {
-            $totalAmount += $item['subtotal'];
-        }
-
-        // Lưu đơn vào DB
+        $totalAmount = array_sum(array_column($cartItems, 'subtotal'));
         $orderModel     = new Order();
         $orderItemModel = new OrderItem();
-        $pdo = $orderModel->getPdo();
+        $shippingModel  = new Shipping();
 
         try {
-            $pdo->beginTransaction();
+            // 1) tạo order
+            $orderId = $orderModel->createOrder($userId, $totalAmount);
 
-            // Tạo bảng orders
-            $orderId = $orderModel->createOrder(
-                $userId,
-                $name,
-                $address,
-                $phone,
-                $note,
-                $totalAmount
-            );
+            // 2) lưu địa chỉ + phone
+            $shippingModel->createShipping($orderId, $address, $phone);
 
-            // Chuẩn bị mảng order_items
+            // 3) lưu chi tiết
             $itemsToInsert = [];
-            foreach ($cartItems as $item) {
+            foreach ($cartItems as $it) {
                 $itemsToInsert[] = [
-                    'product_variant_id' => $item['product_variant_id'],
-                    'quantity'           => $item['quantity'],
-                    'price'              => $item['price']
+                    'product_variant_id' => $it['product_variant_id'],
+                    'quantity'           => $it['quantity'],
+                    'price'              => $it['price'],
                 ];
             }
-
-            // Chèn vào order_items
             $orderItemModel->createItems($orderId, $itemsToInsert);
 
-            // Xóa giỏ hàng (DB)
-            $cartModel->clearCart($userId);
+            // 4) xóa cart
+            (new Cart())->clearCart($userId);
 
-            $pdo->commit();
-
-            // Redirect sang thank_you
             header('Location: ' . BASE_URL . '?mod=client&action=thank_you&order_id=' . $orderId);
             exit;
-        } catch (Exception $e) {
-            $pdo->rollBack();
+        } catch (\Exception $e) {
             $_SESSION['checkout_errors'] = ['Có lỗi khi tạo đơn hàng. Vui lòng thử lại.'];
             header('Location: ' . BASE_URL . '?mod=client&action=checkout_form');
             exit;
         }
     }
 
-    /**
-     * Trang cảm ơn sau khi tạo đơn thành công
-     */
+    // Trang cảm ơn
     public function thankYou()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        if (session_status() === PHP_SESSION_NONE) session_start();
 
-        // Category (giống HomeController để menu)
-        $categoryModel = new Category();
-        $categories = $categoryModel->select();
-
-        // Lấy order_id từ GET
-        $orderId = isset($_GET['order_id']) ? (int) $_GET['order_id'] : null;
+        $orderId = (int)($_GET['order_id'] ?? 0);
         if (!$orderId) {
-            header('Location: ' . BASE_URL . '?mod=client&action=view_cart');
+            header('Location: ' . BASE_URL);
             exit;
         }
 
         $orderModel     = new Order();
         $orderItemModel = new OrderItem();
 
-        $order = $orderModel->findOrderById($orderId);
-        if (!$order) {
-            header('Location: ' . BASE_URL . '?mod=client&action=view_cart');
-            exit;
-        }
-
+        $order      = $orderModel->findOrderById($orderId);
         $orderItems = $orderItemModel->getItemsByOrder($orderId);
 
         require_once PATH_VIEW_CLIENT . 'partials/header.php';

@@ -9,6 +9,8 @@ match ($action) {
     'register_form' => (new AuthController())->showRegisterForm(),
     'register'      => (new AuthController())->register(),
     'logout'        => (new AuthController())->logout(),
+    //User Profile
+    'profile' => (new AuthController())->profile(),
     'test-show' => (new TestController)->show(),
     //Detail product
     'product_ct' => (new ProductController)->detail(),

@@ -7,7 +7,7 @@ class AuthenController
     public function __construct()
     {
         $this->user = new User();
-    }
+    }   
 
     public function showFormLogin()
     {

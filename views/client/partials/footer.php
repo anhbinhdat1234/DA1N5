@@ -233,10 +233,11 @@
 	</div>
 </footer>
 
-<script src="<?= BASE_URL ?>assets/client/assets/vendor/swiper/swiper-bundle.min.js"></script>
-<script src="<?= BASE_URL ?>assets/client/assets/vendor/simplebar/simplebar.min.js"></script>
-<script src="<?= BASE_URL ?>assets/client/assets/vendor/glightbox/glightbox.min.js"></script>
-<script src="<?= BASE_URL ?>assets/client/assets/js/theme.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/client/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/client/assets/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/client/assets/vendor/simplebar/simplebar.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/client/assets/vendor/glightbox/glightbox.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/client/assets/js/theme.min.js"></script>
 </body>
 
 </html>

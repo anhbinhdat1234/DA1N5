@@ -98,4 +98,65 @@ if (!function_exists('get_color_code')) {
 
         return $colors[mb_strtolower($colorName, 'UTF-8')] ?? '#000000';
     }
+    if (!function_exists('current_user')) {
+    function current_user(): ?array
+    {
+        return $_SESSION['user'] ?? null;
+    }
+}
+
+// Lấy role của user
+if (!function_exists('current_user_role')) {
+    function current_user_role(): string
+    {
+        return $_SESSION['user_role'] ?? 'guest';
+    }
+}
+
+// Kiểm tra đã login
+if (!function_exists('is_logged_in')) {
+    function is_logged_in(): bool
+    {
+        return !empty($_SESSION['user']);
+    }
+}
+
+// Kiểm tra có phải admin
+if (!function_exists('is_admin')) {
+    function is_admin(): bool
+    {
+        return is_logged_in() && current_user_role() === 'admin';
+    }
+}
+
+// Yêu cầu login
+if (!function_exists('require_login')) {
+    function require_login(): void
+    {
+        if (!is_logged_in()) {
+            header('Location: ' . BASE_URL . '?action=login_form');
+            exit;
+        }
+    }
+}
+
+// Yêu cầu role cụ thể
+if (!function_exists('require_role')) {
+    function require_role(string $role): void
+    {
+        require_login();
+        if (current_user_role() !== $role) {
+            header('Location: ' . BASE_URL);
+            exit;
+        }
+    }
+}
+
+// Yêu cầu admin
+if (!function_exists('require_admin')) {
+    function require_admin(): void
+    {
+        require_role('admin');
+    }
+}
 }
