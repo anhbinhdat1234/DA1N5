@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jun 05, 2025 at 05:03 PM
+-- Generation Time: Jun 08, 2025 at 04:27 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -35,6 +35,13 @@ CREATE TABLE `cart_items` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `cart_items`
+--
+
+INSERT INTO `cart_items` (`id`, `user_id`, `product_variant_id`, `quantity`, `created_at`) VALUES
+(4, 1, 3, 4, '2025-06-08 22:59:47');
+
 -- --------------------------------------------------------
 
 --
@@ -43,21 +50,20 @@ CREATE TABLE `cart_items` (
 
 CREATE TABLE `categories` (
   `id` int NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `image_url` varchar(255) DEFAULT NULL
+  `name` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `categories`
 --
 
-INSERT INTO `categories` (`id`, `name`, `image_url`) VALUES
-(1, 'Áo thun', NULL),
-(2, 'Áo sơ mi', NULL),
-(3, 'Quần jeans', NULL),
-(4, 'Quần short', NULL),
-(5, 'Váy', NULL),
-(6, 'Áo khoác', NULL);
+INSERT INTO `categories` (`id`, `name`) VALUES
+(1, 'Áo thun'),
+(2, 'Áo sơ mi'),
+(3, 'Quần jeans'),
+(4, 'Quần short'),
+(5, 'Váy'),
+(6, 'Áo khoác');
 
 -- --------------------------------------------------------
 
@@ -73,6 +79,13 @@ CREATE TABLE `orders` (
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`id`, `user_id`, `total`, `status`, `created_at`) VALUES
+(1, 1, '640000.00', 'pending', '2025-06-08 22:36:15');
+
 -- --------------------------------------------------------
 
 --
@@ -86,6 +99,13 @@ CREATE TABLE `order_items` (
   `quantity` int DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `product_variant_id`, `quantity`, `price`) VALUES
+(1, 1, 3, 2, '320000.00');
 
 -- --------------------------------------------------------
 
@@ -205,6 +225,13 @@ CREATE TABLE `shippings` (
   `status` enum('pending','shipping','delivered') DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `shippings`
+--
+
+INSERT INTO `shippings` (`id`, `order_id`, `address`, `phone`, `status`) VALUES
+(1, 1, '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóa', '0853243091', 'pending');
+
 -- --------------------------------------------------------
 
 --
@@ -240,8 +267,6 @@ CREATE TABLE `users` (
   `name` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `phone` varchar(20) DEFAULT NULL,
-  `address` text,
   `role` enum('user','admin') DEFAULT 'user',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -250,9 +275,11 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `phone`, `address`, `role`, `created_at`) VALUES
-(1, '', 'fatitss12@gmail.com', '$2y$10$x0JpjbbpI5m2qzhUPpKs5.AQnNMYTyMdM9fptnbVjjeC8MyDyOrAe', NULL, NULL, 'admin', '2025-05-13 18:55:32'),
-(10, '1', 'fatitss121@gmail.com', '$2y$10$ZM8X6QWASE7rq9.fFEBryezXGJl/qwWn131ME83YE..tE6xajpgWu', NULL, NULL, 'user', '2025-05-23 18:46:54');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `created_at`) VALUES
+(1, 'binh', 'fatitss12@gmail.com', '$2y$10$x0JpjbbpI5m2qzhUPpKs5.AQnNMYTyMdM9fptnbVjjeC8MyDyOrAe', 'admin', '2025-05-13 18:55:32'),
+(10, '1', 'fatitss121@gmail.com', '$2y$10$ZM8X6QWASE7rq9.fFEBryezXGJl/qwWn131ME83YE..tE6xajpgWu', 'user', '2025-05-23 18:46:54'),
+(11, 'admin', 'fatitss@gmail.com', '$2y$10$r0cQikcN9weA8cBG3q52Re792shMv96sBiz9xr6mXfi.4cxQkDYu2', 'user', '2025-06-06 18:34:23'),
+(12, 'admin', 'admin@gmail.com', '$2y$10$54TYvwmnB7IQMX.rofqVF.0a6uoMJYKoSqOvHEhAIu/Im/kLC/Vf6', 'user', '2025-06-08 21:09:00');
 
 --
 -- Indexes for dumped tables
@@ -350,7 +377,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -362,13 +389,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `order_status_history`
@@ -404,7 +431,7 @@ ALTER TABLE `product_variants`
 -- AUTO_INCREMENT for table `shippings`
 --
 ALTER TABLE `shippings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `sliders`
@@ -416,7 +443,7 @@ ALTER TABLE `sliders`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
