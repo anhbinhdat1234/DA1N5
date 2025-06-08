@@ -2,11 +2,23 @@
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
-	$cart = $_SESSION['cart'] ?? [];
-
-	$cartItemCount = is_array($cart)
-    ? array_sum($cart)
-    : 0;
+	$cartModel = new Cart();
+	// 3. Lấy user ID nếu đã login
+	$userId = $_SESSION['user']['id'] ?? null;
+	// 4. Tính tổng số mặt hàng
+	if ($userId !== null) {
+		// Với user đã login: dùng DB
+		$items = $cartModel->getCartItems($userId);
+		// Sum tất cả quantity
+		$cartItemCount = array_sum(array_column($items, 'quantity'));
+	} else {
+		// Với guest: fallback session
+		$sessionCart = $_SESSION['cart'] ?? [];
+		// nếu session lưu [variantId => qty]
+		$cartItemCount = is_array($sessionCart)
+			? array_sum($sessionCart)
+			: 0;
+	}
 ?>
 <?php if (!empty($_SESSION['flash'])): ?>
   <div class="container mt-2">
@@ -255,11 +267,11 @@
 <a href="<?= BASE_URL ?>?action=view_cart"
    class="btn btn-icon btn-lg fs-xl btn-outline-secondary position-relative border-0 rounded-circle animate-scale"
    aria-label="Giỏ hàng">
-    <span
-        class="position-absolute top-0 start-100 badge fs-xs text-bg-primary rounded-pill mt-1 ms-n4 z-2"
-        style="--cz-badge-padding-y: .25em; --cz-badge-padding-x: .42em">
-        <?= $cartItemCount ?? '0' /* hoặc hiện số lượng từ $_SESSION */ ?>
-    </span>
+<span
+    class="position-absolute top-0 start-100 badge fs-xs text-bg-primary rounded-pill mt-1 ms-n4 z-2"
+    style="--cz-badge-padding-y: .25em; --cz-badge-padding-x: .42em">
+    <?= $cartItemCount ?>
+</span>
     <i class="ci-shopping-bag animate-target me-1"></i>
 </a>	
 
