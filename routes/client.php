@@ -13,7 +13,8 @@ match ($action) {
     'profile' => (new AuthController())->profile(),
     'test-show' => (new TestController)->show(),
     //Detail product
-    'product_ct' => (new ProductController)->detail(),
+    'product'         => (new ProductController())->index(),
+    'product_detail', 'product_ct'  => (new ProductController())->detail(),
     //Category
     'category' => (new CategoryController)->index(),
     //Search

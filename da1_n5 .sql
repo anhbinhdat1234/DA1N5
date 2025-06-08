@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jun 08, 2025 at 04:27 PM
+-- Generation Time: Jun 08, 2025 at 05:00 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -34,13 +34,6 @@ CREATE TABLE `cart_items` (
   `quantity` int DEFAULT '1',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `cart_items`
---
-
-INSERT INTO `cart_items` (`id`, `user_id`, `product_variant_id`, `quantity`, `created_at`) VALUES
-(4, 1, 3, 4, '2025-06-08 22:59:47');
 
 -- --------------------------------------------------------
 
@@ -84,7 +77,8 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `total`, `status`, `created_at`) VALUES
-(1, 1, '640000.00', 'pending', '2025-06-08 22:36:15');
+(1, 1, '640000.00', 'pending', '2025-06-08 22:36:15'),
+(2, 1, '790000.00', 'pending', '2025-06-08 23:36:27');
 
 -- --------------------------------------------------------
 
@@ -105,7 +99,9 @@ CREATE TABLE `order_items` (
 --
 
 INSERT INTO `order_items` (`id`, `order_id`, `product_variant_id`, `quantity`, `price`) VALUES
-(1, 1, 3, 2, '320000.00');
+(1, 1, 3, 2, '320000.00'),
+(2, 2, 3, 2, '320000.00'),
+(3, 2, 1, 1, '150000.00');
 
 -- --------------------------------------------------------
 
@@ -214,6 +210,30 @@ INSERT INTO `product_variants` (`id`, `product_id`, `size`, `color`, `stock`) VA
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `reviews`
+--
+
+CREATE TABLE `reviews` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `rating` tinyint NOT NULL,
+  `content` text NOT NULL,
+  `created_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Dumping data for table `reviews`
+--
+
+INSERT INTO `reviews` (`id`, `user_id`, `product_id`, `rating`, `content`, `created_at`) VALUES
+(1, 1, 1, 5, 'Good', '2025-06-08 23:47:34'),
+(2, 1, 1, 5, '1', '2025-06-08 23:48:54'),
+(3, 1, 1, 5, 'test', '2025-06-08 23:49:34');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `shippings`
 --
 
@@ -230,7 +250,8 @@ CREATE TABLE `shippings` (
 --
 
 INSERT INTO `shippings` (`id`, `order_id`, `address`, `phone`, `status`) VALUES
-(1, 1, '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóa', '0853243091', 'pending');
+(1, 1, '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóa', '0853243091', 'pending'),
+(2, 2, '29 ngõ 174 phương canh', '0853243091', 'pending');
 
 -- --------------------------------------------------------
 
@@ -350,6 +371,14 @@ ALTER TABLE `product_variants`
   ADD KEY `product_id` (`product_id`);
 
 --
+-- Indexes for table `reviews`
+--
+ALTER TABLE `reviews`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `product_id` (`product_id`);
+
+--
 -- Indexes for table `shippings`
 --
 ALTER TABLE `shippings`
@@ -377,7 +406,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -389,13 +418,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `order_status_history`
@@ -428,10 +457,16 @@ ALTER TABLE `product_variants`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT for table `reviews`
+--
+ALTER TABLE `reviews`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `shippings`
 --
 ALTER TABLE `shippings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `sliders`
@@ -498,6 +533,13 @@ ALTER TABLE `product_images`
 --
 ALTER TABLE `product_variants`
   ADD CONSTRAINT `product_variants_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
+
+--
+-- Constraints for table `reviews`
+--
+ALTER TABLE `reviews`
+  ADD CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
 
 --
 -- Constraints for table `shippings`
