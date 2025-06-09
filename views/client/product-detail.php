@@ -265,5 +265,75 @@ if (session_status() === PHP_SESSION_NONE) {
     document.addEventListener('DOMContentLoaded', () => {
     });
   </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const variants      = productVariants; // từ json_encode
+    const stockCountEl  = document.getElementById('stock-count');
+    const stockBarEl    = document.getElementById('stock-bar');
+    const btnAddToCart  = document.getElementById('btnAddToCart');
+    const variantInput  = document.getElementById('variant_id');
+    const qtyInput      = document.getElementById('qty-input');
+    const btnInc        = document.getElementById('btn-increment');
+    const btnDec        = document.getElementById('btn-decrement');
+
+    // tính max stock để chia tỉ lệ progress bar
+    const maxStock = Math.max(...variants.map(v => v.stock));
+
+    function getSelectedVariant() {
+      const color = document.querySelector('input[name="color"]:checked')?.value;
+      const size  = document.querySelector('input[name="size"]:checked')?.value;
+      return variants.find(v => v.color === color && v.size === size) || null;
+    }
+
+    function updateStockDisplay() {
+      const variant = getSelectedVariant();
+      if (!variant) {
+        stockCountEl.textContent = 0;
+        stockBarEl.style.width = '0%';
+        btnAddToCart.disabled = true;
+        variantInput.value = '';
+        return;
+      }
+      const stock = variant.stock;
+      stockCountEl.textContent = stock;
+      // width tính theo phần trăm so với maxStock
+      const pct = maxStock > 0 ? (stock / maxStock) * 100 : 0;
+      stockBarEl.style.width = pct + '%';
+      variantInput.value = variant.id;
+      // bật/tắt nút thêm giỏ
+      btnAddToCart.disabled = stock <= 0;
+      // nếu qty input lớn hơn stock thì reset về stock
+      if (parseInt(qtyInput.value, 10) > stock) {
+        qtyInput.value = stock;
+        document.getElementById('quantity').value = stock;
+      }
+    }
+
+    // gắn sự kiện thay đổi color/size
+    document.querySelectorAll('input[name="color"], input[name="size"]')
+      .forEach(el => el.addEventListener('change', updateStockDisplay));
+
+    // xử lý tăng/giảm số lượng
+    btnInc.addEventListener('click', () => {
+      const variant = getSelectedVariant();
+      if (!variant) return;
+      let qty = parseInt(qtyInput.value, 10);
+      if (qty < variant.stock) {
+        qtyInput.value = ++qty;
+        document.getElementById('quantity').value = qty;
+      }
+    });
+    btnDec.addEventListener('click', () => {
+      let qty = parseInt(qtyInput.value, 10);
+      if (qty > 1) {
+        qtyInput.value = --qty;
+        document.getElementById('quantity').value = qty;
+      }
+    });
+
+    // khởi chạy lần đầu
+    updateStockDisplay();
+  });
+</script>
 </body>
 </html>
