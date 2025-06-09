@@ -46,6 +46,7 @@ class AuthController
                 $_SESSION['user'] = [
                     'id'      => $user['id'],
                     'name'    => $user['name'],
+                    'role'    => $user['role'],
                     'phone'   => $user['phone']   ?? '',
                     'address' => $user['address'] ?? ''
                 ];
@@ -138,89 +139,127 @@ class AuthController
     }
 
     // Hiển thị và xử lý Profile + lịch sử đơn hàng
- public function profile()
+    public function profile()
+        {
+            if (session_status() === PHP_SESSION_NONE) session_start();
+            if (empty($_SESSION['user']['id'])) {
+                header('Location: ' . BASE_URL . '?action=login_form');
+                exit;
+            }
+
+            $userId    = $_SESSION['user']['id'];
+            $userModel = new User();
+
+            // POST cập nhật profile (name, phone, address)
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST['order_action'])) {
+                $name    = trim($_POST['name']    ?? '');
+                $phone   = trim($_POST['phone']   ?? '');
+                $address = trim($_POST['address'] ?? '');
+
+                // validate
+                $errors = [];
+                if ($name === '')    $errors[] = 'Tên không được để trống.';
+                if (!preg_match('/^0[0-9]{9,10}$/', $phone)) $errors[] = 'SĐT không hợp lệ.';
+                if (strlen($address) < 5) $errors[] = 'Địa chỉ quá ngắn.';
+
+                if ($errors) {
+                    $_SESSION['profile_errors'] = $errors;
+                    header('Location: ' . BASE_URL . '?action=profile');
+                    exit;
+                }
+
+                $userModel->updateProfile($userId, [
+                    'name'    => $name,
+                    'phone'   => $phone,
+                    'address' => $address,
+                ]);
+
+                // cập nhật session
+                $_SESSION['user']['name']    = $name;
+                $_SESSION['user']['phone']   = $phone;
+                $_SESSION['user']['address'] = $address;
+
+                header('Location: ' . BASE_URL . '?action=profile&updated=1');
+                exit;
+            }
+
+            // Xử lý cập nhật địa chỉ/SĐT đơn hàng (order_action gửi kèm)
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['order_action'])) {
+                $action   = $_POST['order_action'];
+                $orderId  = (int)($_POST['order_id'] ?? 0);
+                if ($action === 'update_address') {
+                    $newAddr  = trim($_POST['new_address'] ?? '');
+                    $newPhone = trim($_POST['new_phone'] ?? '');
+
+                    // đơn giản validate
+                    $err = [];
+                    if (strlen($newAddr) < 5) $err[] = 'Địa chỉ mới quá ngắn.';
+                    if (!preg_match('/^0[0-9]{9,10}$/', $newPhone)) $err[] = 'SĐT mới không hợp lệ.';
+                    if ($err) {
+                        $_SESSION['profile_errors'] = $err;
+                        header('Location: ' . BASE_URL . '?action=profile');
+                        exit;
+                    }
+
+                    $shipModel = new Shipping();
+                    $shipModel->updateShipping($orderId, $newAddr, $newPhone);
+                    header('Location: ' . BASE_URL . '?action=profile&updated=1');
+                    exit;
+                }
+                if ($action === 'cancel_order') {
+                    (new Order())->cancel((int)$orderId);
+                    header('Location: ' . BASE_URL . '?action=profile');
+                    exit;
+                }
+            }
+
+            // Lấy dữ liệu để show
+            $userData = $userModel->findById($userId);
+            $orderModel = new Order();
+            $orders     = $orderModel->getOrdersByUser($userId);
+            $orderItemModel  = new OrderItem();
+            $ordersWithItems = [];
+            foreach ($orders as $order) {
+                $items = $orderItemModel->getItemsByOrder($order['id']);
+                $ordersWithItems[] = ['order'=>$order, 'items'=>$items];
+            }
+
+            require_once PATH_VIEW_CLIENT . 'partials/header.php';
+            require_once PATH_VIEW_CLIENT . 'auth/profile.php';
+            require_once PATH_VIEW_CLIENT . 'partials/footer.php';
+        }
+
+ public function updateOrderAddress()
     {
-        if (session_status() === PHP_SESSION_NONE) session_start();
-        if (empty($_SESSION['user']['id'])) {
-            header('Location: ' . BASE_URL . '?action=login_form');
+        if (session_status()===PHP_SESSION_NONE) session_start();
+        $orderId  = (int)($_POST['order_id'] ?? 0);
+        $newAddr  = trim($_POST['new_address'] ?? '');
+        $newPhone = trim($_POST['new_phone']   ?? '');
+
+        // Validate
+        $errors = [];
+        if (strlen($newAddr) < 10) {
+            $errors[] = 'Địa chỉ mới quá ngắn.';
+        }
+        if (!preg_match('/^0[0-9]{9,10}$/', $newPhone)) {
+            $errors[] = 'SĐT mới không hợp lệ.';
+        }
+        if ($errors) {
+            $_SESSION['profile_errors'] = $errors;
+            header('Location: ' . BASE_URL . '?action=profile');
             exit;
         }
 
-        $userId    = $_SESSION['user']['id'];
-        $userModel = new User();
+        // Cập nhật thông tin giao hàng
+        $shipModel = new Shipping();
+        $shipModel->updateShipping($orderId, $newAddr, $newPhone);
 
-        // POST cập nhật profile
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name    = trim($_POST['name']    ?? '');
-            $phone   = trim($_POST['phone']   ?? '');
-            $address = trim($_POST['address'] ?? '');
-
-            $userModel->updateProfile($userId, [
-                'name'    => $name,
-                'phone'   => $phone,
-                'address' => $address,
-            ]);
-
-            $_SESSION['user']['name']    = $name;
-            $_SESSION['user']['phone']   = $phone;
-            $_SESSION['user']['address'] = $address;
-
-            header('Location: ' . BASE_URL . '?action=profile&updated=1');
-            exit;
-        }
-
-        // Lấy user mới nhất
-        $userData = $userModel->findById($userId);
-
-        // Lấy orders kèm coupon & discount
-        $orderModel = new Order();
-        $orders     = $orderModel->getOrdersByUser($userId);
-
-        // Nếu có POST sửa địa chỉ order
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_type'])) {
-            if ($_POST['action_type'] === 'update_address') {
-                $orderModel->updateAddress((int)$_POST['order_id'], trim($_POST['new_address']));
-                header('Location: ' . BASE_URL . '?action=profile');
-                exit;
-            }
-            if ($_POST['action_type'] === 'cancel_order') {
-                $orderModel->cancel((int)$_POST['order_id']);
-                header('Location: ' . BASE_URL . '?action=profile');
-                exit;
-            }
-        }
-
-        // Lấy chi tiết items
-        $orderItemModel  = new OrderItem();
-        $ordersWithItems = [];
-        foreach ($orders as $order) {
-            $items = $orderItemModel->getItemsByOrder($order['id']);
-            $ordersWithItems[] = [
-                'order' => $order,
-                'items' => $items,
-            ];
-        }
-
-        require_once PATH_VIEW_CLIENT . 'partials/header.php';
-        require_once PATH_VIEW_CLIENT . 'auth/profile.php';
-        require_once PATH_VIEW_CLIENT . 'partials/footer.php';
-    }
-    public function updateOrderAddress()
-    {
-        if (session_status() === PHP_SESSION_NONE) session_start();
-        $userId  = $_SESSION['user']['id'] ?? null;
-        $orderId = (int)($_POST['order_id'] ?? 0);
-        $newAddr = trim($_POST['new_address'] ?? '');
-        if ($userId && $orderId && $newAddr !== '') {
-            (new Order())->updateAddress($orderId, $newAddr);
-        }
-        header('Location: ' . BASE_URL . '?action=profile');
+        header('Location: ' . BASE_URL . '?action=profile&updated=1');
         exit;
     }
 
-    /**
-     * Xử lý POST từ form cancel_order
-     */
+
+
     public function cancelOrder()
     {
         if (session_status() === PHP_SESSION_NONE) session_start();

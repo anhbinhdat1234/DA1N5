@@ -1,5 +1,5 @@
 <?php
-// app/models/Order.php
+// models/Order.php
 
 require_once __DIR__ . '/BaseModel.php';
 
@@ -10,11 +10,11 @@ class Order extends BaseModel
     /**
      * Tạo mới order, trả về order_id
      *
-     * @param int         $userId
-     * @param float       $totalAmount    Tổng sau giảm
-     * @param string|null $couponCode     Mã đã áp (hoặc null)
-     * @param int         $discountAmount Tiền giảm (₫)
-     * @return int
+     * @param int         $userId         ID người dùng
+     * @param float       $totalAmount    Tổng tiền sau giảm
+     * @param string|null $couponCode     Mã giảm giá (nếu có)
+     * @param int         $discountAmount Số tiền đã giảm
+     * @return int                         ID của order mới
      */
     public function createOrder(int $userId, float $totalAmount, ?string $couponCode = null, int $discountAmount = 0): int
     {
@@ -35,7 +35,7 @@ class Order extends BaseModel
     }
 
     /**
-     * Lấy order theo ID
+     * Lấy thông tin một order theo ID
      *
      * @param int $orderId
      * @return array|null
@@ -43,9 +43,10 @@ class Order extends BaseModel
     public function findOrderById(int $orderId): ?array
     {
         $sql = "
-            SELECT *
-            FROM {$this->table}
-            WHERE id = :oid
+            SELECT o.*, s.address AS shipping_address, s.phone AS shipping_phone, s.note AS shipping_note
+            FROM {$this->table} o
+            LEFT JOIN shippings s ON s.order_id = o.id
+            WHERE o.id = :oid
             LIMIT 1
         ";
         $stmt = $this->pdo->prepare($sql);
@@ -54,7 +55,7 @@ class Order extends BaseModel
     }
 
     /**
-     * Lấy danh sách orders của 1 user, có coupon_code + discount_amount
+     * Lấy danh sách orders của một user, kèm địa chỉ shipping
      *
      * @param int $userId
      * @return array
@@ -69,7 +70,9 @@ class Order extends BaseModel
                 o.total,
                 o.coupon_code,
                 o.discount_amount,
-                s.address AS shipping_address
+                s.address AS shipping_address,
+                s.phone   AS shipping_phone,
+                s.note    AS shipping_note
             FROM {$this->table} o
             LEFT JOIN shippings s ON s.order_id = o.id
             WHERE o.user_id = :uid
@@ -79,11 +82,19 @@ class Order extends BaseModel
         $stmt->execute([':uid' => $userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Cập nhật địa chỉ giao hàng trong bảng shippings
+     *
+     * @param int    $orderId
+     * @param string $newAddress
+     * @return bool
+     */
     public function updateAddress(int $orderId, string $newAddress): bool
     {
         $sql = "
-            UPDATE shippings 
-               SET address = :addr 
+            UPDATE shippings
+               SET address = :addr
              WHERE order_id = :oid
         ";
         $stmt = $this->pdo->prepare($sql);
@@ -93,14 +104,42 @@ class Order extends BaseModel
         ]);
     }
 
+    /**
+     * Hủy đơn (thay đổi status thành 'cancelled')
+     *
+     * @param int $orderId
+     * @return bool
+     */
     public function cancel(int $orderId): bool
     {
         $sql = "
-            UPDATE {$this->table} 
-               SET status = 'cancelled' 
+            UPDATE {$this->table}
+               SET status = 'cancelled'
              WHERE id = :oid
         ";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([':oid' => $orderId]);
+    }
+
+    /**
+     * Giảm tồn kho theo các item trong cart
+     *
+     * @param array $cartItems Mảng các phần tử có keys:
+     *                         - product_variant_id
+     *                         - quantity
+     */
+    public function reduceStock(array $cartItems): void
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE product_variants
+               SET stock = stock - :qty
+             WHERE id = :vid
+        ");
+        foreach ($cartItems as $it) {
+            $stmt->execute([
+                ':qty' => $it['quantity'],
+                ':vid' => $it['product_variant_id'],
+            ]);
+        }
     }
 }

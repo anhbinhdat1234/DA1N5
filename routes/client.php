@@ -25,6 +25,8 @@ match ($action) {
     'add_to_cart'     => (new CartController())->add(),      // Xử lý thêm vào giỏ (POST)
     'update_cart'     => (new CartController())->update(),   // Cập nhật số lượng / xóa item (POST)
     'clear_cart'      => (new CartController())->clear(),    // Xóa toàn bộ giỏ
+    'apply_coupon'   => (new CartController())->applyCoupon(),
+    'remove_coupon'  => (new CartController())->removeCoupon(),
     //Checkout
     'checkout_form'   => (new CheckoutController())->index(),
     'submit_checkout' => (new CheckoutController())->submit(),
