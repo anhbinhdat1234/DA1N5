@@ -159,4 +159,15 @@ if (!function_exists('require_admin')) {
         require_role('admin');
     }
 }
+function orderStatusBadge(string $status): string
+{
+    return match($status) {
+        'pending'    => '<span class="badge bg-warning">Chờ xử lý</span>',
+        'processing' => '<span class="badge bg-info">Đang xử lý</span>',
+        'shipped'    => '<span class="badge bg-primary">Đã gửi hàng</span>',
+        'delivered'  => '<span class="badge bg-success">Đã giao hàng</span>',
+        'cancelled'  => '<span class="badge bg-danger">Đã hủy</span>',
+        default      => '<span class="badge bg-secondary">'.htmlspecialchars($status).'</span>',
+    };
+}
 }

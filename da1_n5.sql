@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jun 08, 2025 at 05:00 PM
+-- Generation Time: Jun 09, 2025 at 06:58 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -61,6 +61,38 @@ INSERT INTO `categories` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `coupons`
+--
+
+CREATE TABLE `coupons` (
+  `id` int UNSIGNED NOT NULL,
+  `code` varchar(50) NOT NULL,
+  `type` enum('percent','amount') NOT NULL COMMENT 'percent = %, amount = fixed ₫',
+  `value` decimal(10,2) NOT NULL,
+  `min_order` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT 'đơn tối thiểu để áp dụng',
+  `usage_limit` int UNSIGNED NOT NULL DEFAULT '0' COMMENT '0 = không giới hạn',
+  `used` int UNSIGNED NOT NULL DEFAULT '0',
+  `start_at` datetime DEFAULT NULL,
+  `end_at` datetime DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1=active,0=inactive',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `coupons`
+--
+
+INSERT INTO `coupons` (`id`, `code`, `type`, `value`, `min_order`, `usage_limit`, `used`, `start_at`, `end_at`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'NEWUSER10', 'percent', '10.00', '0.00', 1, 1, NULL, NULL, 1, '2025-06-09 13:05:58', '2025-06-09 13:06:14'),
+(2, 'SUMMER20', 'percent', '20.00', '200000.00', 1000, 3, '2025-06-01 00:00:00', '2025-08-31 00:00:00', 1, '2025-06-09 13:05:58', '2025-06-09 13:35:40'),
+(3, 'WELCOME50', 'amount', '50000.00', '300000.00', 0, 0, NULL, NULL, 1, '2025-06-09 13:05:58', '2025-06-09 13:05:58'),
+(4, 'FIVECLOTH100', 'amount', '100000.00', '1000000.00', 100, 1, '2025-05-01 00:00:00', '2025-07-31 00:00:00', 1, '2025-06-09 13:05:58', '2025-06-09 13:06:44'),
+(5, 'BLACKFRIDAY', 'percent', '50.00', '0.00', 0, 0, '2025-11-27 00:00:00', '2025-11-27 23:59:59', 1, '2025-06-09 13:05:58', '2025-06-09 13:05:58');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `orders`
 --
 
@@ -68,6 +100,8 @@ CREATE TABLE `orders` (
   `id` int NOT NULL,
   `user_id` int DEFAULT NULL,
   `total` decimal(10,2) DEFAULT NULL,
+  `coupon_code` varchar(50) DEFAULT NULL,
+  `discount_amount` int UNSIGNED NOT NULL DEFAULT '0',
   `status` enum('pending','processing','completed','cancelled') DEFAULT 'pending',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -76,9 +110,9 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `total`, `status`, `created_at`) VALUES
-(1, 1, '640000.00', 'pending', '2025-06-08 22:36:15'),
-(2, 1, '790000.00', 'pending', '2025-06-08 23:36:27');
+INSERT INTO `orders` (`id`, `user_id`, `total`, `coupon_code`, `discount_amount`, `status`, `created_at`) VALUES
+(5, 1, '480000.00', NULL, 0, 'cancelled', '2025-06-09 13:33:30'),
+(6, 1, '360000.00', 'SUMMER20', 90000, 'pending', '2025-06-09 13:35:45');
 
 -- --------------------------------------------------------
 
@@ -99,9 +133,8 @@ CREATE TABLE `order_items` (
 --
 
 INSERT INTO `order_items` (`id`, `order_id`, `product_variant_id`, `quantity`, `price`) VALUES
-(1, 1, 3, 2, '320000.00'),
-(2, 2, 3, 2, '320000.00'),
-(3, 2, 1, 1, '150000.00');
+(7, 5, 1, 4, '150000.00'),
+(8, 6, 1, 3, '150000.00');
 
 -- --------------------------------------------------------
 
@@ -250,8 +283,8 @@ CREATE TABLE `shippings` (
 --
 
 INSERT INTO `shippings` (`id`, `order_id`, `address`, `phone`, `status`) VALUES
-(1, 1, '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóa', '0853243091', 'pending'),
-(2, 2, '29 ngõ 174 phương canh', '0853243091', 'pending');
+(5, 5, '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóa', '0853243091', 'pending'),
+(6, 6, '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóa', '0853243091', 'pending');
 
 -- --------------------------------------------------------
 
@@ -287,6 +320,8 @@ CREATE TABLE `users` (
   `id` int NOT NULL,
   `name` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `role` enum('user','admin') DEFAULT 'user',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP
@@ -296,11 +331,11 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `created_at`) VALUES
-(1, 'binh', 'fatitss12@gmail.com', '$2y$10$x0JpjbbpI5m2qzhUPpKs5.AQnNMYTyMdM9fptnbVjjeC8MyDyOrAe', 'admin', '2025-05-13 18:55:32'),
-(10, '1', 'fatitss121@gmail.com', '$2y$10$ZM8X6QWASE7rq9.fFEBryezXGJl/qwWn131ME83YE..tE6xajpgWu', 'user', '2025-05-23 18:46:54'),
-(11, 'admin', 'fatitss@gmail.com', '$2y$10$r0cQikcN9weA8cBG3q52Re792shMv96sBiz9xr6mXfi.4cxQkDYu2', 'user', '2025-06-06 18:34:23'),
-(12, 'admin', 'admin@gmail.com', '$2y$10$54TYvwmnB7IQMX.rofqVF.0a6uoMJYKoSqOvHEhAIu/Im/kLC/Vf6', 'user', '2025-06-08 21:09:00');
+INSERT INTO `users` (`id`, `name`, `email`, `phone`, `address`, `password`, `role`, `created_at`) VALUES
+(1, 'binh', 'fatitss12@gmail.com', '0853243091', '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóa', '$2y$10$x0JpjbbpI5m2qzhUPpKs5.AQnNMYTyMdM9fptnbVjjeC8MyDyOrAe', 'admin', '2025-05-13 18:55:32'),
+(10, '1', 'fatitss121@gmail.com', NULL, NULL, '$2y$10$ZM8X6QWASE7rq9.fFEBryezXGJl/qwWn131ME83YE..tE6xajpgWu', 'user', '2025-05-23 18:46:54'),
+(11, 'admin', 'fatitss@gmail.com', NULL, NULL, '$2y$10$r0cQikcN9weA8cBG3q52Re792shMv96sBiz9xr6mXfi.4cxQkDYu2', 'user', '2025-06-06 18:34:23'),
+(12, 'admin', 'admin@gmail.com', NULL, NULL, '$2y$10$54TYvwmnB7IQMX.rofqVF.0a6uoMJYKoSqOvHEhAIu/Im/kLC/Vf6', 'user', '2025-06-08 21:09:00');
 
 --
 -- Indexes for dumped tables
@@ -319,6 +354,13 @@ ALTER TABLE `cart_items`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `coupons`
+--
+ALTER TABLE `coupons`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `code` (`code`);
 
 --
 -- Indexes for table `orders`
@@ -406,7 +448,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -415,16 +457,22 @@ ALTER TABLE `categories`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT for table `coupons`
+--
+ALTER TABLE `coupons`
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `order_status_history`
@@ -466,7 +514,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT for table `shippings`
 --
 ALTER TABLE `shippings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `sliders`

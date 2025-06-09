@@ -25,4 +25,28 @@ class User extends BaseModel
 
         return $stmt->execute();
     }
+        public function findById(int $id): ?array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+        /**
+     * Cập nhật profile (name, phone, address)
+     */
+    public function updateProfile(int $id, array $data): bool
+    {
+        $sql = "UPDATE {$this->table}
+                  SET name    = :name,
+                      phone   = :phone,
+                      address = :address
+                WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            ':name'    => $data['name'],
+            ':phone'   => $data['phone'],
+            ':address' => $data['address'],
+            ':id'      => $id,
+        ]);
+    }
 }

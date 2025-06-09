@@ -11,7 +11,8 @@ match ($action) {
     'logout'        => (new AuthController())->logout(),
     //User Profile
     'profile' => (new AuthController())->profile(),
-    'test-show' => (new TestController)->show(),
+    'update_order_address' => (new AuthController())->updateOrderAddress(),
+    'cancel_order'         => (new AuthController())->cancelOrder(),
     //Detail product
     'product'         => (new ProductController())->index(),
     'product_detail', 'product_ct'  => (new ProductController())->detail(),
