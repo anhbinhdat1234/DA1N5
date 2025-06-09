@@ -1,56 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php require_once PATH_VIEW_ADMIN . 'layout/header.php'; ?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <aside class="col-md-2 bg-dark text-white p-0">
+            <div class="d-flex flex-column min-vh-100">
+                <ul class="nav flex-column p-3">
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white" href="<?= BASE_URL_ADMIN ?>">🏠 Trang chủ</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white" href="<?= BASE_URL_ADMIN . '&action=product-index' ?>">📦 Quản lý Sản phẩm</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white" href="<?= BASE_URL_ADMIN . '&action=users-index' ?>">👥 Quản lý Người dùng</a>
+                    </li>
+                    <li class="nav-item mt-auto">
+                        <a class="nav-link text-danger" href="<?= BASE_URL_ADMIN . '&action=logout' ?>" onclick="return confirm('Có chắc chắn đăng xuất?')">🚪 Đăng xuất</a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
 
-    <title><?= $title ?? 'Admin Dashboard' ?></title>
+        <!-- Main content -->
+        <main class="col-md-10 bg-light p-5">
+            <h1 class="mb-4 text-primary text-center">
+                <?= $title ?? 'Quản trị hệ thống' ?>
+            </h1>
 
-    <!-- Latest compiled and minified CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-
-<body>
-
-    <nav class="navbar navbar-expand-xxl bg-light justify-content-center">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link text-uppercase" href="<?= BASE_URL_ADMIN ?>"><b>Dashboard</b></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-uppercase" href="<?= BASE_URL_ADMIN . '&action=users-index' ?>"><b>Quản lý User</b></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-uppercase" href="<?= BASE_URL_ADMIN . '&action=books-index' ?>"><b>Quản lý Book</b></a>
-            </li>
-
-            <?php if (!empty($_SESSION['user'])): ?>
-                <li class="nav-item">
-                    <a class="nav-link text-uppercase text-danger"
-                        href="<?= BASE_URL_ADMIN . '&action=logout' ?>"
-                        onclick="return confirm('Có chắc chắn đăng xuất?')"> <b>Đăng xuất</b> </a>
-                </li>
+            <?php if (isset($view)) : ?>
+                <?php require_once PATH_VIEW_ADMIN . $view . '.php'; ?>
             <?php endif; ?>
-
-        </ul>
-    </nav>
-
-    <div class="container">
-        <h1 class="mt-3 mb-3"><?= $title ?? 'Admin Dashboard' ?></h1>
-
-        <div class="row">
-            <?php
-            if (isset($view)) {
-                require_once PATH_VIEW_ADMIN . $view . '.php';
-            }
-            ?>
-        </div>
+        </main>
     </div>
+</div>
 
-</body>
-
-</html>
+<?php require_once PATH_VIEW_ADMIN . 'layout/footer.php'; ?>

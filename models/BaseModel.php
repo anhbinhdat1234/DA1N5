@@ -232,29 +232,5 @@ class BaseModel
 
         return $stmt->rowCount();
     }
-    public function newArrivals(int $limit = 6, int $categoryId = null): array
-    {
-        $sql = "
-          SELECT 
-            p.*,
-            pi.image_url
-          FROM {$this->table} p
-          LEFT JOIN product_images pi
-            ON pi.product_id = p.id
-          " . ($categoryId ? "WHERE p.category_id = :cid" : "") . "
-          ORDER BY p.created_at DESC
-          LIMIT :lim
-        ";
-
-        $stmt = $this->pdo->prepare($sql);
-        if ($categoryId) {
-            $stmt->bindValue(':cid', $categoryId, PDO::PARAM_INT);
-        }
-        $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
 
 }

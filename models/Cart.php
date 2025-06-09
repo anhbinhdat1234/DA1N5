@@ -1,5 +1,6 @@
 <?php
 // models/Cart.php
+
 require_once __DIR__ . '/BaseModel.php';
 
 class Cart extends BaseModel
@@ -89,7 +90,7 @@ class Cart extends BaseModel
     }
 
     /**
-     * Lấy các item trong cart (user hoặc guest)
+     * Lấy các item trong cart (user hoặc guest), kèm stock
      *
      * @param int|null $userId
      * @return array
@@ -98,22 +99,24 @@ class Cart extends BaseModel
     {
         $items = [];
         if ($userId !== null) {
+            // Với user đã login, lấy từ DB
             $sql = "
                 SELECT 
-                    ci.id AS cart_id,
-                    pv.id AS product_variant_id,
-                    p.id  AS product_id,
-                    p.name  AS product_name,
-                    p.price AS price,
-                    pv.color AS color,
-                    pv.size  AS size,
+                    ci.id                AS cart_id,
+                    pv.id                AS product_variant_id,
+                    p.id                 AS product_id,
+                    p.name               AS product_name,
+                    p.price              AS price,
+                    pv.color             AS color,
+                    pv.size              AS size,
+                    pv.stock             AS stock,           -- trả về stock
                     (
                         SELECT image_url 
                           FROM product_images 
                          WHERE product_id = p.id 
                          LIMIT 1
                     ) AS thumbnail,
-                    ci.quantity AS quantity,
+                    ci.quantity          AS quantity,
                     (p.price * ci.quantity) AS subtotal
                   FROM {$this->table} ci
                   JOIN product_variants pv 
@@ -126,6 +129,7 @@ class Cart extends BaseModel
             $stmt->execute([':uid' => $userId]);
             $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } else {
+            // Với guest lưu trong session
             if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
                 foreach ($_SESSION['cart'] as $variantId => $qty) {
                     $stmtDet = $this->pdo->prepare("
@@ -136,6 +140,7 @@ class Cart extends BaseModel
                             p.price         AS price,
                             pv.color        AS color,
                             pv.size         AS size,
+                            pv.stock        AS stock,             -- trả về stock
                             (
                                 SELECT image_url 
                                   FROM product_images 
@@ -159,6 +164,7 @@ class Cart extends BaseModel
                             'price'              => $det['price'],
                             'color'              => $det['color'],
                             'size'               => $det['size'],
+                            'stock'              => $det['stock'],     // stock từ DB
                             'thumbnail'          => $det['thumbnail'],
                             'quantity'           => $qty,
                             'subtotal'           => $det['price'] * $qty
@@ -171,7 +177,7 @@ class Cart extends BaseModel
     }
 
     /**
-     * Cập nhật số lượng
+     * Cập nhật số lượng (trước khi gọi phải validate với stock bên controller)
      */
     public function updateQuantity(int $cartId, int $newQty): void
     {

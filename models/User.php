@@ -49,4 +49,5 @@ class User extends BaseModel
             ':id'      => $id,
         ]);
     }
+    
 }

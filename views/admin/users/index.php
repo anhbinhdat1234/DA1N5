@@ -13,21 +13,15 @@ if (isset($_SESSION['success'])) {
 
 <table class="table">
     <tr>
-        <th>ID</th>
-        <th>AVATAR</th>
-        <th>NAME</th>
-        <th>EMAIL</th>
-        <th>ACTION</th>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Action</th>
     </tr>
 
     <?php foreach ($data as $user): ?>
         <tr>
             <td><?= $user['id'] ?></td>
-            <td>
-                <?php if (!empty($user['avatar'])): ?>
-                    <img src="<?= BASE_ASSETS_UPLOADS . $user['avatar'] ?>" width="100px">
-                <?php endif; ?>
-            </td>
             <td><?= $user['name'] ?></td>
             <td><?= $user['email'] ?></td>
             <td>

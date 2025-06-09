@@ -227,7 +227,7 @@
         <!-- chỗ này thêm admin -->
         <?php if (is_admin()): ?>
         <li>
-            <a class="dropdown-item" href="<?= BASE_URL ?>?action=admin_dashboard">
+		<a class="dropdown-item" href="<?= BASE_URL_ADMIN ?>">
                 <i class="ci-shield-lock me-2"></i> Quản trị
             </a>
         </li>

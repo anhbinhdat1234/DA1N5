@@ -9,12 +9,6 @@ class Order extends BaseModel
 
     /**
      * Tạo mới order, trả về order_id
-     *
-     * @param int         $userId         ID người dùng
-     * @param float       $totalAmount    Tổng tiền sau giảm
-     * @param string|null $couponCode     Mã giảm giá (nếu có)
-     * @param int         $discountAmount Số tiền đã giảm
-     * @return int                         ID của order mới
      */
     public function createOrder(int $userId, float $totalAmount, ?string $couponCode = null, int $discountAmount = 0): int
     {
@@ -35,10 +29,7 @@ class Order extends BaseModel
     }
 
     /**
-     * Lấy thông tin một order theo ID
-     *
-     * @param int $orderId
-     * @return array|null
+     * Lấy order theo ID, kèm thông tin giao hàng
      */
     public function findOrderById(int $orderId): ?array
     {
@@ -55,10 +46,7 @@ class Order extends BaseModel
     }
 
     /**
-     * Lấy danh sách orders của một user, kèm địa chỉ shipping
-     *
-     * @param int $userId
-     * @return array
+     * Lấy danh sách orders của 1 user, có thông tin giao hàng
      */
     public function getOrdersByUser(int $userId): array
     {
@@ -84,51 +72,41 @@ class Order extends BaseModel
     }
 
     /**
-     * Cập nhật địa chỉ giao hàng trong bảng shippings
-     *
-     * @param int    $orderId
-     * @param string $newAddress
-     * @return bool
+     * Cập nhật địa chỉ và phone cho đơn hàng (bảng shippings)
      */
-    public function updateAddress(int $orderId, string $newAddress): bool
+    public function updateAddress(int $orderId, string $newAddress, string $newPhone): bool
     {
         $sql = "
             UPDATE shippings
-               SET address = :addr
+               SET address = :addr,
+                   phone   = :phone
              WHERE order_id = :oid
         ";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([
-            ':addr' => $newAddress,
-            ':oid'  => $orderId,
+            ':addr'  => $newAddress,
+            ':phone' => $newPhone,
+            ':oid'   => $orderId,
         ]);
     }
 
     /**
-     * Hủy đơn (thay đổi status thành 'cancelled')
-     *
-     * @param int $orderId
-     * @return bool
+     * Đánh dấu hủy đơn
      */
     public function cancel(int $orderId): bool
     {
-        $sql = "
-            UPDATE {$this->table}
-               SET status = 'cancelled'
-             WHERE id = :oid
-        ";
+        $sql = "UPDATE {$this->table} SET status = 'cancelled' WHERE id = :oid";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([':oid' => $orderId]);
     }
-
-    /**
+        /**
      * Giảm tồn kho theo các item trong cart
      *
      * @param array $cartItems Mảng các phần tử có keys:
      *                         - product_variant_id
      *                         - quantity
      */
-    public function reduceStock(array $cartItems): void
+        public function reduceStock(array $cartItems): void
     {
         $stmt = $this->pdo->prepare("
             UPDATE product_variants
@@ -143,3 +121,4 @@ class Order extends BaseModel
         }
     }
 }
+

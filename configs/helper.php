@@ -109,7 +109,7 @@ if (!function_exists('get_color_code')) {
 if (!function_exists('current_user_role')) {
     function current_user_role(): string
     {
-        return $_SESSION['user_role'] ?? 'guest';
+        return $_SESSION['user']['role'] ?? 'guest';
     }
 }
 

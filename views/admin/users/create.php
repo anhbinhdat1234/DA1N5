@@ -41,11 +41,6 @@ if (isset($_SESSION['success'])) {
         <label for="password" class="form-label">Password:</label>
         <input type="text" class="form-control" id="password" name="password">
     </div>
-    <div class="mb-3">
-        <label for="avatar" class="form-label">Avatar:</label>
-        <input type="file" class="form-control" id="avatar" name="avatar">
-    </div>
-
     <button type="submit" class="btn btn-primary">Submit</button>
 
     <a href="<?= BASE_URL_ADMIN . '&action=users-index' ?>" class="btn btn-danger">Quay lại danh sách</a>

@@ -149,4 +149,16 @@ public function searchByKeyword(string $keyword): array
     ]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+//Admin 
+public function getWithCategory(): array
+{
+    $sql = "SELECT p.*, c.name AS category_name 
+            FROM products p 
+            JOIN categories c ON p.category_id = c.id 
+            ORDER BY p.created_at DESC";
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 }
