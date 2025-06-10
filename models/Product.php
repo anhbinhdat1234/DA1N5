@@ -79,14 +79,16 @@ public function getProductByCategoryId(?int $categoryId = null, int $limit = 10)
     return $products;
 }
 
-
     public function getProductDetail(int $productId): ?array
     {
+        // Lấy thông tin sản phẩm, tên danh mục, 1 ảnh đại diện (nếu cần)
         $sql = "
         SELECT 
             p.*,
+            c.name AS category_name,
             MIN(pi.image_url) AS image_url
         FROM {$this->table} p
+        JOIN categories c ON p.category_id = c.id
         LEFT JOIN product_images pi ON pi.product_id = p.id
         WHERE p.id = :pid
         GROUP BY p.id
@@ -98,9 +100,16 @@ public function getProductByCategoryId(?int $categoryId = null, int $limit = 10)
 
         $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$product)
-            return null;
+        if (!$product) return null;
 
+        // Lấy tất cả ảnh sản phẩm (mảng image_url)
+        $imgSql = "SELECT image_url FROM product_images WHERE product_id = :pid";
+        $imgStmt = $this->pdo->prepare($imgSql);
+        $imgStmt->bindValue(':pid', $productId, PDO::PARAM_INT);
+        $imgStmt->execute();
+        $product['images'] = $imgStmt->fetchAll(PDO::FETCH_COLUMN);
+
+        // Lấy tất cả biến thể (nếu cần)
         $variantSql = "
         SELECT color, size, stock, id
         FROM product_variants
@@ -113,7 +122,6 @@ public function getProductByCategoryId(?int $categoryId = null, int $limit = 10)
 
         $colors = [];
         $sizes = [];
-
         foreach ($variants as $variant) {
             if (!in_array($variant['color'], $colors)) {
                 $colors[] = $variant['color'];
@@ -128,7 +136,9 @@ public function getProductByCategoryId(?int $categoryId = null, int $limit = 10)
 
         return $product;
     }
-public function searchByKeyword(string $keyword): array
+
+
+    public function searchByKeyword(string $keyword): array
 {
     $sql = "
         SELECT 
@@ -149,16 +159,44 @@ public function searchByKeyword(string $keyword): array
     ]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-//Admin 
-public function getWithCategory(): array
-{
-    $sql = "SELECT p.*, c.name AS category_name 
-            FROM products p 
-            JOIN categories c ON p.category_id = c.id 
-            ORDER BY p.created_at DESC";
-    $stmt = $this->pdo->prepare($sql);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+    //Admin 
+    public function getWithCategory(): array
+    {
+        $sql = "SELECT p.*, c.name AS category_name, MIN(pi.image_url) as image_url
+                FROM products p 
+                JOIN categories c ON p.category_id = c.id 
+                LEFT JOIN product_images pi ON pi.product_id = p.id
+                GROUP BY p.id
+                ORDER BY p.created_at DESC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
+    public function deleteProductWithRelations(int $id): bool
+    {
+        try {
+            // Bắt đầu transaction để đảm bảo toàn vẹn dữ liệu
+            $this->pdo->beginTransaction();
+
+            // Xóa tất cả ảnh liên quan
+            $stmtImages = $this->pdo->prepare("DELETE FROM product_images WHERE product_id = :id");
+            $stmtImages->execute(['id' => $id]);
+
+            // Xóa tất cả biến thể liên quan
+            $stmtVariants = $this->pdo->prepare("DELETE FROM product_variants WHERE product_id = :id");
+            $stmtVariants->execute(['id' => $id]);
+
+            // Xóa sản phẩm chính
+            $stmtProduct = $this->pdo->prepare("DELETE FROM {$this->table} WHERE id = :id");
+            $stmtProduct->execute(['id' => $id]);
+
+            $this->pdo->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            // Có thể log lỗi $e->getMessage() nếu cần
+            return false;
+        }
+    }
 }

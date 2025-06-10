@@ -1,54 +1,17 @@
 <?php
-// models/OrderItem.php
-
 class OrderItem extends BaseModel
 {
     protected $table = 'order_items';
 
-    /**
-     * Chèn nhiều dòng chi tiết đơn hàng
-     *
-     * @param int   $orderId
-     * @param array $items  Mỗi phần tử gồm [
-     *                      'product_variant_id'=>int,
-     *                      'quantity'=>int,
-     *                      'price'=>float
-     *                    ]
-     */
-    public function createItems(int $orderId, array $items): void
+    public function getByOrderIdWithProductDetail($orderId)
     {
-        $sql = "
-            INSERT INTO {$this->table}
-                (order_id, product_variant_id, quantity, price)
-            VALUES
-                (:oid, :vid, :qty, :price)
-        ";
+        $sql = "SELECT oi.*, pv.product_id, p.name as product_name, pv.size, pv.color
+FROM order_items oi
+JOIN product_variants pv ON oi.product_variant_id = pv.id
+JOIN products p ON pv.product_id = p.id
+WHERE oi.order_id = :order_id";
         $stmt = $this->pdo->prepare($sql);
-        foreach ($items as $it) {
-            $stmt->execute([
-                ':oid'   => $orderId,
-                ':vid'   => $it['product_variant_id'],
-                ':qty'   => $it['quantity'],
-                ':price' => $it['price'],
-            ]);
-        }
-    }
-
-    /**
-     * Lấy chi tiết đơn hàng theo order_id
-     */
-    public function getItemsByOrder(int $orderId): array
-    {
-        $sql = "
-            SELECT oi.*, p.name AS product_name, pv.color, pv.size
-            FROM {$this->table} oi
-            JOIN product_variants pv ON pv.id = oi.product_variant_id
-            JOIN products p ON p.id = pv.product_id
-            WHERE oi.order_id = :oid
-        ";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([':oid' => $orderId]);
+        $stmt->execute(['order_id' => $orderId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
 }

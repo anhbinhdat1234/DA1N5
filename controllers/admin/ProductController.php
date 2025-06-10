@@ -17,8 +17,8 @@ class ProductController
     {
         $view = 'product/index';
         $title = 'Danh sách sản phẩm';
-        $data = $this->product->getWithCategory();
-        require_once PATH_VIEW_ADMIN . 'layout/main.php';
+        $products = $this->product->getWithCategory();
+        require_once PATH_VIEW_ADMIN . '/main.php';
     }
 
     public function create()
@@ -27,7 +27,7 @@ class ProductController
         $title = 'Thêm sản phẩm';
         $categories = $this->category->select();
         $categoryPluck = array_column($categories, 'name', 'id');
-        require_once PATH_VIEW_ADMIN . 'layout/main.php';
+        require_once PATH_VIEW_ADMIN . 'main.php';
     }
 
     public function store()
@@ -54,7 +54,7 @@ class ProductController
 
         $view = 'product/edit';
         $title = 'Sửa sản phẩm';
-        require_once PATH_VIEW_ADMIN . 'layout/main.php';
+        require_once PATH_VIEW_ADMIN . 'main.php';
     }
 
     public function update()
@@ -76,22 +76,28 @@ class ProductController
     public function show()
     {
         $id = $_GET['id'] ?? null;
-        $product = $this->product->find('*', 'id = :id', ['id' => $id]);
+        $product = $this->product->getProductDetail($id); // Dùng hàm mới
         $view = 'product/show';
         $title = 'Chi tiết sản phẩm';
-        require_once PATH_VIEW_ADMIN . 'layout/main.php';
+        require_once PATH_VIEW_ADMIN . 'main.php';
     }
+
 
     public function delete()
     {
         $id = $_GET['id'] ?? null;
-        try {
-            $this->product->delete('id = :id', ['id' => $id]);
-            $_SESSION['success'] = true;
-            $_SESSION['msg'] = 'Xóa thành công';
-        } catch (Exception $e) {
+        if (!$id) {
             $_SESSION['success'] = false;
-            $_SESSION['msg'] = 'Lỗi: ' . $e->getMessage();
+            $_SESSION['msg'] = 'Thiếu id sản phẩm!';
+        } else {
+            $result = $this->product->deleteProductWithRelations($id);
+            if ($result) {
+                $_SESSION['success'] = true;
+                $_SESSION['msg'] = 'Xóa thành công!';
+            } else {
+                $_SESSION['success'] = false;
+                $_SESSION['msg'] = 'Không xóa được. Có thể do lỗi liên kết hoặc server!';
+            }
         }
         header('Location: ' . BASE_URL_ADMIN . '&action=product-index');
         exit;

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jun 09, 2025 at 08:24 AM
+-- Generation Time: Jun 09, 2025 at 04:24 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -34,6 +34,13 @@ CREATE TABLE `cart_items` (
   `quantity` int DEFAULT '1',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `cart_items`
+--
+
+INSERT INTO `cart_items` (`id`, `user_id`, `product_variant_id`, `quantity`, `created_at`) VALUES
+(17, 14, 5, 8, '2025-06-09 17:00:20');
 
 -- --------------------------------------------------------
 
@@ -116,7 +123,11 @@ INSERT INTO `orders` (`id`, `user_id`, `total`, `coupon_code`, `discount_amount`
 (7, 1, '5040000.00', 'SUMMER20', 1260000, 'pending', '2025-06-09 14:22:07'),
 (8, 1, '300000.00', NULL, 0, 'cancelled', '2025-06-09 14:36:53'),
 (9, 13, '320000.00', NULL, 0, 'cancelled', '2025-06-09 14:51:58'),
-(10, 13, '320000.00', NULL, 0, 'pending', '2025-06-09 15:02:31');
+(10, 13, '320000.00', NULL, 0, 'cancelled', '2025-06-09 15:02:31'),
+(11, 14, '0.00', 'SUMMER20', 4050000, 'pending', '2025-06-09 17:05:01'),
+(12, 1, '2890000.00', NULL, 0, 'pending', '2025-06-09 17:33:10'),
+(13, 1, '2890000.00', NULL, 0, 'pending', '2025-06-09 17:35:02'),
+(14, 13, '768000.00', 'SUMMER20', 192000, 'pending', '2025-06-09 19:23:21');
 
 -- --------------------------------------------------------
 
@@ -143,7 +154,10 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_variant_id`, `quantity`, `
 (10, 7, 1, 10, '150000.00'),
 (11, 8, 1, 2, '150000.00'),
 (12, 9, 3, 1, '320000.00'),
-(13, 10, 3, 1, '320000.00');
+(13, 10, 3, 1, '320000.00'),
+(14, 13, 5, 5, '450000.00'),
+(15, 13, 3, 2, '320000.00'),
+(16, 14, 3, 3, '320000.00');
 
 -- --------------------------------------------------------
 
@@ -243,9 +257,9 @@ CREATE TABLE `product_variants` (
 INSERT INTO `product_variants` (`id`, `product_id`, `size`, `color`, `stock`) VALUES
 (1, 1, 'M', 'Trắng', 48),
 (2, 1, 'L', 'Trắng', 7),
-(3, 2, '32', 'Xanh', 48),
+(3, 2, '32', 'Xanh', 43),
 (4, 3, 'S', 'Hồng', 5),
-(5, 4, 'Free', 'Đen', 8);
+(5, 4, 'Free', 'Đen', 3);
 
 -- --------------------------------------------------------
 
@@ -283,6 +297,7 @@ CREATE TABLE `shippings` (
   `address` text,
   `phone` varchar(20) DEFAULT NULL,
   `note` text,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `status` enum('pending','shipping','delivered') DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -290,13 +305,15 @@ CREATE TABLE `shippings` (
 -- Dumping data for table `shippings`
 --
 
-INSERT INTO `shippings` (`id`, `order_id`, `address`, `phone`, `note`, `status`) VALUES
-(5, 5, '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóa', '0853243091', NULL, 'pending'),
-(6, 6, '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóaaaa', '0853243091', NULL, 'pending'),
-(7, 7, 'a', '1', NULL, 'pending'),
-(8, 8, '46 dong tac phuong dong tho tp thanh hoaa', '0853243091', 'aaa', 'pending'),
-(9, 9, '46 dong tac phuong dong tho', '0853243091', '1', 'pending'),
-(10, 10, '46 dong tac th', '0853243092', 'aaa', 'pending');
+INSERT INTO `shippings` (`id`, `order_id`, `address`, `phone`, `note`, `created_at`, `status`) VALUES
+(5, 5, '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóa', '0853243091', NULL, '2025-06-09 17:34:52', 'pending'),
+(6, 6, '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóaaaa', '0853243091', NULL, '2025-06-09 17:34:52', 'pending'),
+(7, 7, 'a', '1', NULL, '2025-06-09 17:34:52', 'pending'),
+(8, 8, '46 dong tac phuong dong tho tp thanh hoaa', '0853243091', 'aaa', '2025-06-09 17:34:52', 'pending'),
+(9, 9, '46 dong tac phuong dong tho', '0853243091', '1', '2025-06-09 17:34:52', 'pending'),
+(10, 10, '46 dong tac th', '0853243092', 'aaa', '2025-06-09 17:34:52', 'pending'),
+(11, 13, '46 dong tac', '0853243091', 'a', '2025-06-09 17:35:02', 'pending'),
+(12, 14, '46 dong tacaaaa', '0853243091', 'aaaa', '2025-06-09 19:23:21', 'pending');
 
 -- --------------------------------------------------------
 
@@ -345,10 +362,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `address`, `password`, `role`, `created_at`) VALUES
 (1, 'binh', 'fatitss12@gmail.com', '0853243091', '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóa', '$2y$10$x0JpjbbpI5m2qzhUPpKs5.AQnNMYTyMdM9fptnbVjjeC8MyDyOrAe', 'admin', '2025-05-13 18:55:32'),
-(10, '1', 'fatitss121@gmail.com', NULL, NULL, '$2y$10$ZM8X6QWASE7rq9.fFEBryezXGJl/qwWn131ME83YE..tE6xajpgWu', 'user', '2025-05-23 18:46:54'),
-(11, 'admin', 'fatitss@gmail.com', NULL, NULL, '$2y$10$r0cQikcN9weA8cBG3q52Re792shMv96sBiz9xr6mXfi.4cxQkDYu2', 'user', '2025-06-06 18:34:23'),
-(12, 'admin', 'admin@gmail.com', NULL, NULL, '$2y$10$54TYvwmnB7IQMX.rofqVF.0a6uoMJYKoSqOvHEhAIu/Im/kLC/Vf6', 'user', '2025-06-08 21:09:00'),
-(13, 'CAO THANH BÌNH', 'binhctph52720@gmail.com', NULL, NULL, '$2y$10$SjsDAW5HlkqP4k72acRq6uTr9oSRU3Uh187Z8lGKPuw3hhDH.qdnO', 'user', '2025-06-09 14:51:26');
+(13, 'CAO THANH BÌNH', 'binhctph52720@gmail.com', NULL, NULL, '$2y$10$SjsDAW5HlkqP4k72acRq6uTr9oSRU3Uh187Z8lGKPuw3hhDH.qdnO', 'user', '2025-06-09 14:51:26'),
+(14, 'CAO THANH BÌNH', 'fatitss@gmail.com', NULL, NULL, '$2y$10$LbWacbaQrGpERR8Sf5l2O.AOQvejtGytu1RM03TenMKY.UOUnNVRS', 'user', '2025-06-09 16:59:58');
 
 --
 -- Indexes for dumped tables
@@ -461,7 +476,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -479,13 +494,13 @@ ALTER TABLE `coupons`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `order_status_history`
@@ -527,7 +542,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT for table `shippings`
 --
 ALTER TABLE `shippings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `sliders`
@@ -539,7 +554,7 @@ ALTER TABLE `sliders`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables

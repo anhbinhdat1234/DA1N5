@@ -97,7 +97,8 @@
 		<!-- Item -->
 		<?php foreach ($newArrivals as $product): ?>
 			<div data-category="<?= $product['category_id'] ?>" class="col mb-2 mb-sm-3 mb-md-0">
-				<div class="animate-underline hover-effect-opacity">
+				<div class="animate-underl
+				ine hover-effect-opacity">
 					<div class="position-relative mb-3">
 						<span
 							class="badge text-bg-danger position-absolute top-0 start-0 z-2 mt-2 mt-sm-3 ms-2 ms-sm-3">NEW</span>

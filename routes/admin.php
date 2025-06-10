@@ -4,12 +4,36 @@ $action = $_GET['action'] ?? '/';
 // Danh sách tất cả action của admin
 $adminActions = [
     '/',
-    'show-form-login', 'login', 'logout',
-    'users-index', 'users-show', 'users-create', 'users-store', 'users-edit', 'users-update', 'users-delete',
-    'product-index', 'product-show', 'product-create', 'product-store', 'product-edit', 'product-update', 'product-delete'
+    'show-form-login',
+    'login',
+    'logout',
+
+    // User
+    'users-index',
+    'users-show',
+    'users-create',
+    'users-store',
+    'users-edit',
+    'users-update',
+    'users-delete',
+
+    // Product
+    'product-index',
+    'product-show',
+    'product-create',
+    'product-store',
+    'product-edit',
+    'product-update',
+    'product-delete',
+
+    // Order (Đơn hàng)
+    'orders-index',
+    'orders-show',
+    'orders-delete',
+    'orders-update-status'
 ];
 
-// Nếu không phải admin và không truy cập login thì redirect về form login
+// Nếu chưa đăng nhập admin thì chỉ cho phép truy cập login
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     if (!in_array($action, ['show-form-login', 'login'])) {
         header('Location: ' . BASE_URL_ADMIN . '&action=show-form-login');
@@ -17,12 +41,17 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
     }
 }
 
-// Include layout header for admin
+// Require các controller chính
 require_once PATH_VIEW_ADMIN . 'layout/header.php';
+require_once PATH_CONTROLLER_ADMIN . 'DashboardController.php';
+require_once PATH_CONTROLLER_ADMIN . 'AuthenController.php';
+require_once PATH_CONTROLLER_ADMIN . 'UserController.php';
 require_once PATH_CONTROLLER_ADMIN . 'ProductController.php';
+require_once PATH_CONTROLLER_ADMIN . 'OrderController.php';
 
 // Routing admin actions
 match ($action) {
+    // Dashboard
     '/' => (new DashboardController())->index(),
 
     // Auth
@@ -47,6 +76,12 @@ match ($action) {
     'product-edit'   => (new ProductController())->edit(),
     'product-update' => (new ProductController())->update(),
     'product-delete' => (new ProductController())->delete(),
+
+    // Đơn hàng (Order)
+    'orders-index'         => (new OrderController())->index(),
+    'orders-show'          => (new OrderController())->show(),
+    'orders-delete'        => (new OrderController())->delete(),
+    'orders-update-status' => (new OrderController())->updateStatus(),
 
     default => (new DashboardController())->index(),
 };

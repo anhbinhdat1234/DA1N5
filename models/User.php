@@ -6,14 +6,15 @@ class User extends BaseModel
 
     public function findByEmail(string $email): ?array
     {
-        $emailEscaped = addslashes($email);
-        $user = $this->find('*', "email = '$emailEscaped'");
-        return $user ?: null;
+        $stmt = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE email = :email");
+        $stmt->execute([':email' => $email]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
+
     public function create(array $data): bool
     {
-        $columns    = array_keys($data);                
-        $placeholders = array_map(fn($c) => ":$c", $columns); 
+        $columns = array_keys($data);
+        $placeholders = array_map(fn($c) => ":$c", $columns);
 
         $sql = "INSERT INTO {$this->table} (" . implode(', ', $columns) . ")
                 VALUES (" . implode(', ', $placeholders) . ")";
@@ -25,29 +26,38 @@ class User extends BaseModel
 
         return $stmt->execute();
     }
-        public function findById(int $id): ?array
+
+    public function findById(int $id): ?array
     {
         $stmt = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE id = :id");
         $stmt->execute([':id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
-        /**
-     * Cập nhật profile (name, phone, address)
-     */
-    public function updateProfile(int $id, array $data): bool
+
+   
+    public function updateUser(int $id, array $data): bool
     {
-        $sql = "UPDATE {$this->table}
-                  SET name    = :name,
-                      phone   = :phone,
-                      address = :address
-                WHERE id = :id";
+        $set = [];
+        foreach ($data as $k => $v) {
+            $set[] = "$k = :$k";
+        }
+        $sql = "UPDATE {$this->table} SET " . implode(', ', $set) . " WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([
-            ':name'    => $data['name'],
-            ':phone'   => $data['phone'],
-            ':address' => $data['address'],
-            ':id'      => $id,
-        ]);
+        $data['id'] = $id;
+        return $stmt->execute($data);
     }
-    
+
+
+    public function deleteUser(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM {$this->table} WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
+
+    public function getAll()
+    {
+        $stmt = $this->pdo->prepare("SELECT id, name, email, phone, address, role, created_at FROM {$this->table} ORDER BY id DESC");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

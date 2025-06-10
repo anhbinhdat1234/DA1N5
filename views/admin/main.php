@@ -15,9 +15,14 @@
                     <li class="nav-item mb-2">
                         <a class="nav-link text-white" href="<?= BASE_URL_ADMIN . '&action=users-index' ?>">👥 Quản lý Người dùng</a>
                     </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link text-white" href="<?= BASE_URL_ADMIN . '&action=orders-index' ?>">🧾 Quản lý Đơn hàng</a>
+                    </li>
                     <li class="nav-item mt-auto">
                         <a class="nav-link text-danger" href="<?= BASE_URL_ADMIN . '&action=logout' ?>" onclick="return confirm('Có chắc chắn đăng xuất?')">🚪 Đăng xuất</a>
                     </li>
+
+
                 </ul>
             </div>
         </aside>

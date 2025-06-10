@@ -31,3 +31,4 @@ if ($mode == 'admin') {
     # require đường dẫn của client
     require_once './routes/client.php';
 }
+
