@@ -2,5 +2,9 @@
   <h2 class="mb-4">Cảm ơn bạn đã đặt hàng!</h2>
   <p>Mã đơn hàng của bạn là <strong>#<?= htmlspecialchars($order['id']) ?></strong>.</p>
   <p>Chúng tôi sẽ liên hệ lại sớm nhất.</p>
+
   <a href="<?= BASE_URL ?>" class="btn btn-primary mt-3">Quay về trang chủ</a>
+  <a href="<?= BASE_URL ?>?action=orders" class="btn btn-outline-secondary mt-3 ms-2">
+    <i class="bi bi-receipt"></i> Đơn hàng của tôi
+  </a>
 </div>

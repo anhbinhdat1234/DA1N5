@@ -224,6 +224,11 @@
                 <i class="ci-id-card me-2"></i> Xem Profile
             </a>
         </li>
+		<li>
+            <a class="dropdown-item" href="<?= BASE_URL ?>?action=orders">
+                <i class="ci-clipboard me-2"></i> Đơn hàng của tôi
+            </a>
+        </li>
         <!-- chỗ này thêm admin -->
         <?php if (is_admin()): ?>
         <li>

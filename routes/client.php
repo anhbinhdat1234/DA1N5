@@ -1,8 +1,16 @@
 <?php
 $action = $_GET['action'] ?? '/';
 
+
 match ($action) {
     '/' => (new HomeController)->index(),
+    //ĐƠN HÀNG CỦA NGƯỜI DÙNG
+    'orders'        => (new OrderController())->index(),
+    'order_detail'  => (new OrderController())->detail(),
+    'update_order_item' => (new OrderController())->updateItem(),
+    'delete_order_item' => (new OrderController())->deleteItem(),
+
+    
     //Login, Register, Logout
     'login_form'    => (new AuthController())->showLoginForm(),
     'login'         => (new AuthController())->login(),
@@ -31,4 +39,5 @@ match ($action) {
     'checkout_form'   => (new CheckoutController())->index(),
     'submit_checkout' => (new CheckoutController())->submit(),
     'thank_you'       => (new CheckoutController())->thankYou(),
+    
 };

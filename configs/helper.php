@@ -170,4 +170,25 @@ function orderStatusBadge(string $status): string
         default      => '<span class="badge bg-secondary">'.htmlspecialchars($status).'</span>',
     };
 }
+//TRANGJ THÁI ĐƠN HÀNG PHÍA NGƯỜI DÙNG
+function getStatusText($status)
+{
+    $statuses = [
+        'pending' => 'Chờ xử lý',
+        'processing' => 'Đang xử lý',
+        'completed' => 'Hoàn thành',
+        'cancelled' => 'Đã hủy'
+    ];
+    return $statuses[$status] ?? $status;
+}
+
+function getShippingStatusText($status)
+{
+    $statuses = [
+        'pending' => 'Chờ xử lý',
+        'shipping' => 'Đang giao hàng',
+        'delivered' => 'Đã giao'
+    ];
+    return $statuses[$status] ?? $status;
+}
 }
