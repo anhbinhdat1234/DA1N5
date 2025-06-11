@@ -1,6 +1,5 @@
 <?php
 // controllers/client/CheckoutController.php
-
 require_once PATH_MODEL . 'Cart.php';
 require_once PATH_MODEL . 'Order.php';
 require_once PATH_MODEL . 'OrderItem.php';
@@ -55,16 +54,16 @@ class CheckoutController
             exit;
         }
 
-        // Lấy dữ liệu từ form
         $address = trim($_POST['address'] ?? '');
         $phone   = trim($_POST['phone']   ?? '');
         $note    = trim($_POST['note']    ?? '');
         $errors  = [];
 
-        // Validate
+        // Validate address (tối thiểu 10 ký tự)
         if (strlen($address) < 10) {
             $errors[] = 'Địa chỉ giao hàng phải ít nhất 10 ký tự.';
         }
+        // Validate phone (must be 10-11 digits)
         if (!preg_match('/^0[0-9]{9,10}$/', $phone)) {
             $errors[] = 'Số điện thoại không hợp lệ (bắt đầu 0, 10-11 chữ số).';
         }
@@ -75,7 +74,6 @@ class CheckoutController
             exit;
         }
 
-        // Tính toán
         $totalAmount    = array_sum(array_column($cartItems, 'subtotal'));
         $couponCode     = $_SESSION['coupon']['code'] ?? null;
         $discountAmount = $_SESSION['discount'] ?? 0;
@@ -94,19 +92,17 @@ class CheckoutController
                 $discountAmount
             );
 
-            // 2) Lưu shipping
+            // 2) Lưu shipping (bao gồm ghi chú)
             $shippingModel->createShipping($orderId, $address, $phone, $note);
 
-            // 3) Lưu order items
+            // 3) Lưu chi tiết đơn hàng
             $orderItemModel->createItems(
                 $orderId,
-                array_map(function($it) {
-                    return [
-                        'product_variant_id' => $it['product_variant_id'],
-                        'quantity'           => $it['quantity'],
-                        'price'              => $it['price'],
-                    ];
-                }, $cartItems)
+                array_map(fn($it) => [
+                    'product_variant_id' => $it['product_variant_id'],
+                    'quantity'           => $it['quantity'],
+                    'price'              => $it['price'],
+                ], $cartItems)
             );
 
             // 4) Giảm tồn kho
@@ -116,7 +112,7 @@ class CheckoutController
             (new Cart())->clearCart($userId);
             unset($_SESSION['coupon'], $_SESSION['discount']);
 
-            // 6) Chuyển tới thank you
+            // 6) Chuyển tới trang cảm ơn
             header('Location: ' . BASE_URL . '?action=thank_you&order_id=' . $orderId);
             exit;
         } catch (\Exception $e) {
@@ -138,7 +134,7 @@ class CheckoutController
             exit;
         }
 
-        $order      = (new Order())->findById($orderId);
+        $order      = (new Order())->findOrderById($orderId);
         $orderItems = (new OrderItem())->getItemsByOrder($orderId);
 
         require_once PATH_VIEW_CLIENT . 'partials/header.php';

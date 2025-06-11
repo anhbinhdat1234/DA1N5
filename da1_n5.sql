@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jun 11, 2025 at 04:59 AM
+-- Generation Time: Jun 09, 2025 at 04:24 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -32,9 +32,15 @@ CREATE TABLE `cart_items` (
   `user_id` int DEFAULT NULL,
   `product_variant_id` int DEFAULT NULL,
   `quantity` int DEFAULT '1',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `cart_items`
+--
+
+INSERT INTO `cart_items` (`id`, `user_id`, `product_variant_id`, `quantity`, `created_at`) VALUES
+(17, 14, 5, 8, '2025-06-09 17:00:20');
 
 -- --------------------------------------------------------
 
@@ -104,27 +110,24 @@ CREATE TABLE `orders` (
   `coupon_code` varchar(50) DEFAULT NULL,
   `discount_amount` int UNSIGNED NOT NULL DEFAULT '0',
   `status` enum('pending','processing','completed','cancelled') DEFAULT 'pending',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `total`, `coupon_code`, `discount_amount`, `status`, `created_at`, `updated_at`) VALUES
-(5, 1, '480000.00', NULL, 0, 'cancelled', '2025-06-09 13:33:30', '2025-06-10 15:44:25'),
-(6, 1, '360000.00', 'SUMMER20', 90000, 'pending', '2025-06-09 13:35:45', '2025-06-10 15:44:25'),
-(7, 1, '5040000.00', 'SUMMER20', 1260000, 'pending', '2025-06-09 14:22:07', '2025-06-10 15:44:25'),
-(8, 1, '300000.00', NULL, 0, 'cancelled', '2025-06-09 14:36:53', '2025-06-10 15:44:25'),
-(9, 13, '320000.00', NULL, 0, 'cancelled', '2025-06-09 14:51:58', '2025-06-10 15:44:25'),
-(10, 13, '320000.00', NULL, 0, 'cancelled', '2025-06-09 15:02:31', '2025-06-10 15:44:25'),
-(12, 1, '2890000.00', NULL, 0, 'pending', '2025-06-09 17:33:10', '2025-06-10 15:44:25'),
-(13, 1, '2890000.00', NULL, 0, 'pending', '2025-06-09 17:35:02', '2025-06-10 15:44:25'),
-(14, 13, '768000.00', 'SUMMER20', 192000, 'pending', '2025-06-09 19:23:21', '2025-06-10 15:44:25'),
-(15, 1, '320000.00', NULL, 0, 'pending', '2025-06-11 11:55:52', '2025-06-11 11:55:52'),
-(16, 1, '320000.00', NULL, 0, 'pending', '2025-06-11 11:57:57', '2025-06-11 11:57:57'),
-(17, 1, '320000.00', NULL, 0, 'pending', '2025-06-11 11:58:30', '2025-06-11 11:58:30');
+INSERT INTO `orders` (`id`, `user_id`, `total`, `coupon_code`, `discount_amount`, `status`, `created_at`) VALUES
+(5, 1, '480000.00', NULL, 0, 'cancelled', '2025-06-09 13:33:30'),
+(6, 1, '360000.00', 'SUMMER20', 90000, 'pending', '2025-06-09 13:35:45'),
+(7, 1, '5040000.00', 'SUMMER20', 1260000, 'pending', '2025-06-09 14:22:07'),
+(8, 1, '300000.00', NULL, 0, 'cancelled', '2025-06-09 14:36:53'),
+(9, 13, '320000.00', NULL, 0, 'cancelled', '2025-06-09 14:51:58'),
+(10, 13, '320000.00', NULL, 0, 'cancelled', '2025-06-09 15:02:31'),
+(11, 14, '0.00', 'SUMMER20', 4050000, 'pending', '2025-06-09 17:05:01'),
+(12, 1, '2890000.00', NULL, 0, 'pending', '2025-06-09 17:33:10'),
+(13, 1, '2890000.00', NULL, 0, 'pending', '2025-06-09 17:35:02'),
+(14, 13, '768000.00', 'SUMMER20', 192000, 'pending', '2025-06-09 19:23:21');
 
 -- --------------------------------------------------------
 
@@ -154,8 +157,7 @@ INSERT INTO `order_items` (`id`, `order_id`, `product_variant_id`, `quantity`, `
 (13, 10, 3, 1, '320000.00'),
 (14, 13, 5, 5, '450000.00'),
 (15, 13, 3, 2, '320000.00'),
-(16, 14, 3, 3, '320000.00'),
-(17, 17, 3, 1, '320000.00');
+(16, 14, 3, 3, '320000.00');
 
 -- --------------------------------------------------------
 
@@ -203,7 +205,7 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `price`, `description`, `category_id`, `created_at`) VALUES
-(1, 'Áo thun trắng basic', '15000000.00', 'Áo thun cotton 100%, thoáng mát', 1, '2025-05-12 20:04:24'),
+(1, 'Áo thun trắng basic', '150000.00', 'Áo thun cotton 100%, thoáng mát', 1, '2025-05-12 20:04:24'),
 (2, 'Quần jeans xanh', '320000.00', 'Chất liệu denim co giãn nhẹ', 3, '2025-05-12 20:04:24'),
 (3, 'Váy xòe hoa nhí', '280000.00', 'Phong cách nữ tính, dễ thương', 5, '2025-05-12 20:04:24'),
 (4, 'Áo khoác bomber', '450000.00', 'Chống gió, thời trang', 6, '2025-05-12 20:04:24'),
@@ -255,7 +257,7 @@ CREATE TABLE `product_variants` (
 INSERT INTO `product_variants` (`id`, `product_id`, `size`, `color`, `stock`) VALUES
 (1, 1, 'M', 'Trắng', 48),
 (2, 1, 'L', 'Trắng', 7),
-(3, 2, '32', 'Xanh', 42),
+(3, 2, '32', 'Xanh', 43),
 (4, 3, 'S', 'Hồng', 5),
 (5, 4, 'Free', 'Đen', 3);
 
@@ -311,10 +313,7 @@ INSERT INTO `shippings` (`id`, `order_id`, `address`, `phone`, `note`, `created_
 (9, 9, '46 dong tac phuong dong tho', '0853243091', '1', '2025-06-09 17:34:52', 'pending'),
 (10, 10, '46 dong tac th', '0853243092', 'aaa', '2025-06-09 17:34:52', 'pending'),
 (11, 13, '46 dong tac', '0853243091', 'a', '2025-06-09 17:35:02', 'pending'),
-(12, 14, '46 dong tacaaaa', '0853243091', 'aaaa', '2025-06-09 19:23:21', 'pending'),
-(13, 15, '46 dong  tac', '0853243091', '', '2025-06-11 11:55:52', 'pending'),
-(14, 16, '46 dong  tac', '0853243091', '', '2025-06-11 11:57:57', 'pending'),
-(15, 17, '46 dong  tac', '0853243091', '', '2025-06-11 11:58:30', 'pending');
+(12, 14, '46 dong tacaaaa', '0853243091', 'aaaa', '2025-06-09 19:23:21', 'pending');
 
 -- --------------------------------------------------------
 
@@ -354,17 +353,17 @@ CREATE TABLE `users` (
   `address` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `role` enum('user','admin') DEFAULT 'user',
-  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `phone`, `address`, `password`, `role`, `created_at`, `updated_at`) VALUES
-(1, 'binh', 'fatitss12@gmail.com', '0853243091', '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóa', '$2y$10$x0JpjbbpI5m2qzhUPpKs5.AQnNMYTyMdM9fptnbVjjeC8MyDyOrAe', 'admin', '2025-05-13 18:55:32', '2025-06-10 15:55:55'),
-(13, 'CAO THANH BÌNH', 'binhctph527200@gmail.com', NULL, NULL, '$2y$10$SjsDAW5HlkqP4k72acRq6uTr9oSRU3Uh187Z8lGKPuw3hhDH.qdnO', 'user', '2025-06-09 14:51:26', '2025-06-10 08:56:03');
+INSERT INTO `users` (`id`, `name`, `email`, `phone`, `address`, `password`, `role`, `created_at`) VALUES
+(1, 'binh', 'fatitss12@gmail.com', '0853243091', '46 Đông Tác Đông Thọ, TP. Thanh Hóa, Thanh Hóa', '$2y$10$x0JpjbbpI5m2qzhUPpKs5.AQnNMYTyMdM9fptnbVjjeC8MyDyOrAe', 'admin', '2025-05-13 18:55:32'),
+(13, 'CAO THANH BÌNH', 'binhctph52720@gmail.com', NULL, NULL, '$2y$10$SjsDAW5HlkqP4k72acRq6uTr9oSRU3Uh187Z8lGKPuw3hhDH.qdnO', 'user', '2025-06-09 14:51:26'),
+(14, 'CAO THANH BÌNH', 'fatitss@gmail.com', NULL, NULL, '$2y$10$LbWacbaQrGpERR8Sf5l2O.AOQvejtGytu1RM03TenMKY.UOUnNVRS', 'user', '2025-06-09 16:59:58');
 
 --
 -- Indexes for dumped tables
@@ -477,7 +476,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -495,13 +494,13 @@ ALTER TABLE `coupons`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `order_status_history`
@@ -543,7 +542,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT for table `shippings`
 --
 ALTER TABLE `shippings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `sliders`
@@ -565,14 +564,14 @@ ALTER TABLE `users`
 -- Constraints for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  ADD CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `cart_items_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `cart_items_ibfk_2` FOREIGN KEY (`product_variant_id`) REFERENCES `product_variants` (`id`);
 
 --
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `fk_orders_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `order_items`

@@ -1,106 +1,137 @@
 <?php
-/**
- * Model: Order
- * Xử lý các thao tác với bảng orders
- */
+// models/Order.php
+
+require_once __DIR__ . '/BaseModel.php';
+
 class Order extends BaseModel
 {
     protected $table = 'orders';
 
     /**
-     * Tạo order mới, trả về order_id
-     *
-     * @param int         $userId        ID người dùng
-     * @param float       $finalAmount   Tổng tiền sau giảm giá
-     * @param string|null $couponCode    Mã coupon (nếu có)
-     * @param float       $discountAmount Số tiền đã giảm
-     * @return int
+     * Tạo mới order, trả về order_id
      */
-    public function createOrder(int $userId, float $finalAmount, ?string $couponCode = null, float $discountAmount = 0.0): int
+    public function createOrder(int $userId, float $totalAmount, ?string $couponCode = null, int $discountAmount = 0): int
     {
         $sql = "
             INSERT INTO {$this->table}
                 (user_id, total, coupon_code, discount_amount, created_at)
             VALUES
-                (:uid, :total, :coupon, :discount, NOW())
+                (:uid, :total, :code, :discount, NOW())
         ";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             ':uid'      => $userId,
-            ':total'    => $finalAmount,
-            ':coupon'   => $couponCode,
+            ':total'    => $totalAmount,
+            ':code'     => $couponCode,
             ':discount' => $discountAmount,
         ]);
         return (int)$this->pdo->lastInsertId();
     }
 
     /**
-     * Giảm tồn kho cho các variant đã đặt
-     *
-     * @param array $cartItems Mảng item với keys: product_variant_id, quantity
+     * Lấy order theo ID, kèm thông tin giao hàng
      */
-    public function reduceStock(array $cartItems): void
+    public function findOrderById(int $orderId): ?array
     {
-        $sql  = "UPDATE product_variants SET stock = stock - :qty WHERE id = :id";
+        $sql = "
+            SELECT o.*, s.address AS shipping_address, s.phone AS shipping_phone, s.note AS shipping_note
+            FROM {$this->table} o
+            LEFT JOIN shippings s ON s.order_id = o.id
+            WHERE o.id = :oid
+            LIMIT 1
+        ";
         $stmt = $this->pdo->prepare($sql);
-        foreach ($cartItems as $item) {
+        $stmt->execute([':oid' => $orderId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    /**
+     * Lấy danh sách orders của 1 user, có thông tin giao hàng
+     */
+    public function getOrdersByUser(int $userId): array
+    {
+        $sql = "
+            SELECT 
+                o.id,
+                o.created_at,
+                o.status,
+                o.total,
+                o.coupon_code,
+                o.discount_amount,
+                s.address AS shipping_address,
+                s.phone   AS shipping_phone,
+                s.note    AS shipping_note
+            FROM {$this->table} o
+            LEFT JOIN shippings s ON s.order_id = o.id
+            WHERE o.user_id = :uid
+            ORDER BY o.created_at DESC
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([':uid' => $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Cập nhật địa chỉ và phone cho đơn hàng (bảng shippings)
+     */
+    public function updateAddress(int $orderId, string $newAddress, string $newPhone): bool
+    {
+        $sql = "
+            UPDATE shippings
+               SET address = :addr,
+                   phone   = :phone
+             WHERE order_id = :oid
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            ':addr'  => $newAddress,
+            ':phone' => $newPhone,
+            ':oid'   => $orderId,
+        ]);
+    }
+
+    /**
+     * Đánh dấu hủy đơn
+     */
+    public function cancel(int $orderId): bool
+    {
+        $sql = "UPDATE {$this->table} SET status = 'cancelled' WHERE id = :oid";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([':oid' => $orderId]);
+    }
+        /**
+     * Giảm tồn kho theo các item trong cart
+     *
+     * @param array $cartItems Mảng các phần tử có keys:
+     *                         - product_variant_id
+     *                         - quantity
+     */
+        public function reduceStock(array $cartItems): void
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE product_variants
+               SET stock = stock - :qty
+             WHERE id = :vid
+        ");
+        foreach ($cartItems as $it) {
             $stmt->execute([
-                ':qty' => $item['quantity'],
-                ':id'  => $item['product_variant_id'],
+                ':qty' => $it['quantity'],
+                ':vid' => $it['product_variant_id'],
             ]);
         }
     }
-
-    /**
-     * Lấy tất cả orders kèm tên user
-     *
-     * @return array
-     */
-    public function getAll(): array
+    public function getOrderDetails(int $orderId, int $userId): ?array
     {
-        $sql = "SELECT o.*, u.name AS user_name
-            FROM {$this->table} o
-            LEFT JOIN users u ON o.user_id = u.id
-            ORDER BY o.id DESC";
-        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    /**
-     * Tìm order theo ID
-     *
-     * @param int $id
-     * @return array|null
-     */
-    public function findById(int $id): ?array
-    {
-        $stmt = $this->pdo->prepare("SELECT * FROM {$this->table} WHERE id = :id");
-        $stmt->execute(['id' => $id]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ?: null;
-    }
-
-    /**
-     * Xóa order theo ID
-     *
-     * @param int $id
-     * @return bool
-     */
-    public function deleteById(int $id): bool
-    {
-        $stmt = $this->pdo->prepare("DELETE FROM {$this->table} WHERE id = :id");
-        return $stmt->execute(['id' => $id]);
-    }
-
-    /**
-     * Cập nhật trạng thái order
-     *
-     * @param int    $id
-     * @param string $status
-     * @return bool
-     */
-    public function updateStatus(int $id, string $status): bool
-    {
-        $stmt = $this->pdo->prepare("UPDATE {$this->table} SET status = :status WHERE id = :id");
-        return $stmt->execute(['status' => $status, 'id' => $id]);
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM {$this->table}
+             WHERE id = :oid AND user_id = :uid
+             LIMIT 1"
+        );
+        $stmt->execute([
+            ':oid' => $orderId,
+            ':uid' => $userId,
+        ]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 }
+

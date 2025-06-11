@@ -60,4 +60,8 @@ class User extends BaseModel
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+        public function updateProfile(int $id, array $data): bool
+    {
+        return $this->updateUser($id, $data);
+    }
 }

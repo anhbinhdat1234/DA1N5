@@ -72,4 +72,5 @@ class Shipping extends BaseModel
         $stmt->execute([':oid' => $orderId]);
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
+    
 }

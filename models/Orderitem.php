@@ -1,24 +1,21 @@
 <?php
-/**
- * Model: OrderItem
- * Xử lý các thao tác với bảng order_items
- */
 class OrderItem extends BaseModel
 {
     protected $table = 'order_items';
 
     /**
-     * Tạo nhiều order item cho 1 đơn hàng
+     * Tạo các order_items khi checkout
      *
-     * @param int   $orderId ID đơn hàng
-     * @param array $items   Mảng item với keys:
-     *                      - product_variant_id
-     *                      - quantity
-     *                      - price
+     * @param int   $orderId
+     * @param array $items   Mảng mỗi phần tử có keys:
+     *                       - product_variant_id
+     *                       - quantity
+     *                       - price
      */
     public function createItems(int $orderId, array $items): void
     {
-        $sql = "INSERT INTO {$this->table} (order_id, product_variant_id, quantity, price)
+        $sql = "INSERT INTO {$this->table}
+                (order_id, product_variant_id, quantity, price)
                 VALUES (:order_id, :pv_id, :qty, :price)";
         $stmt = $this->pdo->prepare($sql);
 
@@ -33,7 +30,7 @@ class OrderItem extends BaseModel
     }
 
     /**
-     * Lấy danh sách order items kèm thông tin sản phẩm
+     * Lấy tất cả items theo đơn hàng, kèm thông tin product/variant
      *
      * @param int $orderId
      * @return array
@@ -43,12 +40,6 @@ class OrderItem extends BaseModel
         return $this->getByOrderIdWithProductDetail($orderId);
     }
 
-    /**
-     * Lấy order items theo order kèm detail sản phẩm và variant
-     *
-     * @param int $orderId
-     * @return array
-     */
     public function getByOrderIdWithProductDetail(int $orderId): array
     {
         $sql = "SELECT oi.*, pv.product_id, p.name AS product_name, pv.size, pv.color
@@ -59,5 +50,37 @@ class OrderItem extends BaseModel
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['order_id' => $orderId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Cập nhật số lượng 1 order_item
+     *
+     * @param int $itemId
+     * @param int $quantity
+     * @return bool
+     */
+    public function updateQuantity(int $itemId, int $quantity): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "UPDATE {$this->table}
+             SET quantity = :qty
+             WHERE id = :id"
+        );
+        return $stmt->execute([
+            ':qty' => $quantity,
+            ':id'  => $itemId,
+        ]);
+    }
+
+    /**
+     * Xóa 1 order_item
+     *
+     * @param int $itemId
+     * @return bool
+     */
+    public function deleteItem(int $itemId): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM {$this->table} WHERE id = :id");
+        return $stmt->execute([':id' => $itemId]);
     }
 }
