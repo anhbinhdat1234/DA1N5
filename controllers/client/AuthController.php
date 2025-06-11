@@ -88,7 +88,7 @@ class AuthController
     }
 
     // Xử lý đăng ký
-    public function register()
+ public function register()
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
         if (isset($_SESSION['user'])) {
@@ -101,11 +101,14 @@ class AuthController
         $password = trim($_POST['password'] ?? '');
         $error    = '';
 
+        // Validate đầu vào
         if ($name === '' || $email === '' || $password === '') {
             $error = 'Vui lòng điền đầy đủ họ tên, email và mật khẩu';
+        } elseif (strlen($password) < 6) {
+            $error = 'Mật khẩu phải có ít nhất 6 ký tự';
         } else {
             $userModel = new User();
-            $existing = $userModel->find('*', "email = '" . addslashes($email) . "'");
+            $existing = $userModel->findByEmail($email);
             if ($existing) {
                 $error = 'Email này đã được sử dụng';
             } else {
