@@ -1,19 +1,29 @@
+<?php
+// views/admin/orders/show.php
+?>
+
 <!-- Hiển thị thông báo -->
 <?php if (isset($_SESSION['success'])): ?>
   <div class="alert <?= $_SESSION['success'] ? 'alert-success' : 'alert-danger' ?>">
-    <?= $_SESSION['msg'] ?>
+    <?= htmlspecialchars($_SESSION['msg']) ?>
   </div>
   <?php unset($_SESSION['success'], $_SESSION['msg']); ?>
 <?php endif; ?>
 
-<h4>Thông tin đơn hàng #<?= $order['id'] ?></h4>
-<ul>
-  <li>User ID: <?= $order['user_id'] ?></li>
-  <li>Tổng tiền: <?= number_format($order['total']) ?></li>
-  <li>Mã coupon: <?= htmlspecialchars($order['coupon_code']) ?></li>
-  <li>Giảm giá: <?= $order['discount_amount'] ?></li>
-  <li>Trạng thái:
-    <form method="post" action="<?= BASE_URL_ADMIN . '&action=orders-update-status&id=' . $order['id'] ?>" style="display:inline">
+<h4>Thông tin đơn hàng #<?= htmlspecialchars($order['id']) ?></h4>
+<ul class="list-unstyled mb-4">
+  <li><strong>User ID:</strong> <?= htmlspecialchars($order['user_id']) ?></li>
+  <li><strong>Tổng tiền:</strong> <?= number_format($order['total']) ?>₫</li>
+  <li><strong>Mã coupon:</strong>
+    <?= htmlspecialchars($order['coupon_code'] ?? '') ?>
+  </li>
+  <li><strong>Giảm giá:</strong> <?= number_format($order['discount_amount']) ?>₫</li>
+  <li><strong>Trạng thái:</strong>
+    <form
+      method="post"
+      action="<?= BASE_URL_ADMIN . '&action=orders-update-status&id=' . $order['id'] ?>"
+      class="d-inline"
+    >
       <select name="status" class="form-select d-inline w-auto">
         <option value="pending" <?= $order['status'] === 'pending' ? 'selected' : '' ?>>Chờ xử lý</option>
         <option value="processing" <?= $order['status'] === 'processing' ? 'selected' : '' ?>>Đang xử lý</option>
@@ -23,7 +33,7 @@
       <button type="submit" class="btn btn-primary btn-sm ms-2">Cập nhật</button>
     </form>
   </li>
-  <li>Ngày tạo: <?= $order['created_at'] ?></li>
+  <li><strong>Ngày tạo:</strong> <?= htmlspecialchars($order['created_at']) ?></li>
 </ul>
 
 <h5>Sản phẩm trong đơn hàng</h5>
@@ -41,14 +51,15 @@
   <tbody>
     <?php foreach ($orderItems as $item): ?>
       <tr>
-        <td><?= $item['id'] ?></td>
+        <td><?= htmlspecialchars($item['id']) ?></td>
         <td><?= htmlspecialchars($item['product_name']) ?></td>
         <td><?= htmlspecialchars($item['size'] ?? '') ?></td>
         <td><?= htmlspecialchars($item['color'] ?? '') ?></td>
-        <td><?= $item['quantity'] ?></td>
-        <td><?= number_format($item['price']) ?></td>
+        <td><?= htmlspecialchars($item['quantity']) ?></td>
+        <td><?= number_format($item['price']) ?>₫</td>
       </tr>
     <?php endforeach; ?>
   </tbody>
 </table>
+
 <a href="<?= BASE_URL_ADMIN . '&action=orders-index' ?>" class="btn btn-secondary">Quay lại</a>

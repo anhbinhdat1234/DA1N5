@@ -133,5 +133,61 @@ class Order extends BaseModel
         ]);
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
+public function getAllWithUser(): array
+{
+    $sql = "
+      SELECT 
+        o.*,
+        u.name AS user_name
+      FROM {$this->table} o
+      LEFT JOIN users u ON o.user_id = u.id
+      ORDER BY o.created_at DESC
+    ";
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+public function deleteById(int $orderId): bool
+{
+    try {
+        $this->pdo->beginTransaction();
+
+        // 1. Xóa các order_items liên quan
+        $stmt1 = $this->pdo->prepare("DELETE FROM order_items WHERE order_id = :id");
+        $stmt1->execute([':id' => $orderId]);
+
+        // 2. Xóa các shippings liên quan
+        $stmt2 = $this->pdo->prepare("DELETE FROM shippings WHERE order_id = :id");
+        $stmt2->execute([':id' => $orderId]);
+
+        // 3. Xóa chính đơn hàng
+        $stmt3 = $this->pdo->prepare("DELETE FROM {$this->table} WHERE id = :id");
+        $stmt3->execute([':id' => $orderId]);
+
+        $this->pdo->commit();
+        return true;
+    } catch (\Exception $e) {
+        $this->pdo->rollBack();
+        throw $e;
+    }
+}
+public function findById(int $id): ?array
+{
+    return $this->findOrderById($id);
+}
+    public function updateStatus(int $orderId, string $status): bool
+    {
+        $sql = "
+            UPDATE {$this->table}
+               SET status = :status
+             WHERE id = :id
+        ";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            ':status' => $status,
+            ':id'     => $orderId,
+        ]);
+    }
 }
 

@@ -16,7 +16,7 @@ class OrderController
   // Hiển thị danh sách đơn hàng
   public function index()
   {
-    $orders = $this->order->getAll();
+    $orders = $this->order->getAllWithUser();
     $view = 'orders/index';
     $title = 'Danh sách đơn hàng';
     require_once PATH_VIEW_ADMIN_MAIN;
