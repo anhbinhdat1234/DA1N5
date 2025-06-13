@@ -5,7 +5,6 @@ class ProductImage extends BaseModel
 {
     protected $table = 'product_images';
 
-    // Lấy tất cả image_url theo product_id
     public function findByProductId(int $productId): array
     {
         $stmt = $this->pdo->prepare(
@@ -15,14 +14,13 @@ class ProductImage extends BaseModel
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Tạo mới 1 bản ghi image
     public function create(array $data): bool
     {
         $cols         = array_keys($data);
-        $placeholders = array_map(fn($c) => ":$c", $cols);
+        $holders      = array_map(fn($c) => ":$c", $cols);
         $sql = "INSERT INTO {$this->table} ("
              . implode(', ', $cols) . ") VALUES ("
-             . implode(', ', $placeholders) . ")";
+             . implode(', ', $holders) . ")";
         $stmt = $this->pdo->prepare($sql);
         foreach ($data as $k => $v) {
             $stmt->bindValue(":$k", $v);
@@ -30,7 +28,6 @@ class ProductImage extends BaseModel
         return $stmt->execute();
     }
 
-    // Xóa tất cả ảnh của product
     public function deleteByProductId(int $productId): bool
     {
         $stmt = $this->pdo->prepare(

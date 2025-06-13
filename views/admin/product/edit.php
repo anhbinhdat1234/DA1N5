@@ -1,69 +1,114 @@
-<?php /*** views/admin/product/edit.php */ ?>
+<?php /*** views/admin/product/edit.php ***/ ?>
+
 <h2>Sửa sản phẩm #<?= $product['id'] ?></h2>
 
-<?php if (!empty($_SESSION['errors'])): ?>
-  <div class="alert alert-danger">
-    <ul class="mb-0">
-      <?php foreach ($_SESSION['errors'] as $err): ?>
-        <li><?= htmlspecialchars($err) ?></li>
-      <?php endforeach; ?>
-    </ul>
-  </div>
-  <?php unset($_SESSION['errors']); ?>
-<?php endif; ?>
-
 <form method="post"
-      action="<?= BASE_URL_ADMIN . '&action=product-update&id=' . $product['id'] ?>"
+      action="<?= BASE_URL_ADMIN ?>&action=product-update&id=<?= $product['id'] ?>"
       enctype="multipart/form-data">
-    <div class="mb-3">
-        <label class="form-label">Tên</label>
-        <input type="text" name="name" class="form-control"
-               value="<?= htmlspecialchars($product['name']) ?>">
-    </div>
 
-    <div class="mb-3">
-        <label class="form-label">Giá</label>
-        <input type="number" name="price" class="form-control"
-               value="<?= htmlspecialchars($product['price']) ?>">
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Mô tả</label>
-        <textarea name="description" class="form-control" rows="4"><?= htmlspecialchars($product['description']) ?></textarea>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Danh mục</label>
-        <select name="category_id" class="form-select">
-            <?php foreach ($categories as $c): ?>
-                <option value="<?= $c['id'] ?>"
-                  <?= ($c['id'] == $product['category_id']) ? 'selected' : '' ?>>
-                  <?= htmlspecialchars($c['name']) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-
-    <div class="mb-4">
-      <label class="form-label">Ảnh hiện tại</label>
-      <div class="d-flex flex-wrap gap-2">
-        <?php if (!empty($productImages)): ?>
-          <?php foreach ($productImages as $img): ?>
-            <img src="<?= BASE_URL . $img['image_url'] ?>"
-                 class="img-thumbnail" style="width:100px; height:auto;">
-          <?php endforeach; ?>
-        <?php else: ?>
-          <span class="text-muted">Chưa có ảnh</span>
-        <?php endif; ?>
+  <!-- Tên sản phẩm -->
+  <div class="mb-3">
+    <label class="form-label">Tên sản phẩm</label>
+    <input type="text"
+           name="name"
+           class="form-control <?= isset($_SESSION['errors']['name'])?'is-invalid':'' ?>"
+           value="<?= htmlspecialchars($_SESSION['old']['name'] ?? $product['name']) ?>">
+    <?php if(isset($_SESSION['errors']['name'])):?>
+      <div class="invalid-feedback">
+        <?= htmlspecialchars($_SESSION['errors']['name']) ?>
       </div>
-    </div>
+    <?php endif;?>
+  </div>
 
-    <div class="mb-3">
-        <label class="form-label">Thêm ảnh mới</label>
-        <input type="file" name="images[]" multiple accept="image/*" class="form-control">
-        <small class="text-muted">Upload ảnh để thêm vào gallery.</small>
-    </div>
+  <!-- Giá -->
+  <div class="mb-3">
+    <label class="form-label">Giá (VNĐ)</label>
+    <input type="text"
+           name="price"
+           class="form-control <?= isset($_SESSION['errors']['price'])?'is-invalid':'' ?>"
+           value="<?= htmlspecialchars($_SESSION['old']['price'] ?? $product['price']) ?>">
+    <?php if(isset($_SESSION['errors']['price'])):?>
+      <div class="invalid-feedback">
+        <?= htmlspecialchars($_SESSION['errors']['price']) ?>
+      </div>
+    <?php endif;?>
+  </div>
 
-    <button type="submit" class="btn btn-primary">Cập nhật</button>
-    <a href="<?= BASE_URL_ADMIN . '&action=product-index' ?>" class="btn btn-secondary">Hủy</a>
+  <!-- Mô tả -->
+  <div class="mb-3">
+    <label class="form-label">Mô tả</label>
+    <textarea name="description"
+              class="form-control"
+              rows="4"><?= htmlspecialchars($_SESSION['old']['description'] ?? $product['description']) ?></textarea>
+  </div>
+
+  <!-- Danh mục -->
+  <div class="mb-3">
+    <label class="form-label">Danh mục</label>
+    <select name="category_id"
+            class="form-select <?= isset($_SESSION['errors']['category_id'])?'is-invalid':'' ?>">
+      <?php 
+        $selCat = $_SESSION['old']['category_id'] ?? $product['category_id'];
+        foreach($categories as $c): 
+      ?>
+        <option value="<?= $c['id'] ?>" <?= ($selCat == $c['id'])?'selected':'' ?>>
+          <?= htmlspecialchars($c['name']) ?>
+        </option>
+      <?php endforeach; ?>
+    </select>
+    <?php if(isset($_SESSION['errors']['category_id'])):?>
+      <div class="invalid-feedback">
+        <?= htmlspecialchars($_SESSION['errors']['category_id']) ?>
+      </div>
+    <?php endif;?>
+  </div>
+
+  <!-- Ảnh hiện tại -->
+  <div class="mb-4">
+    <label class="form-label">Ảnh hiện tại</label>
+    <div class="d-flex flex-wrap gap-2">
+      <?php if(!empty($images)): ?>
+        <?php foreach($images as $img): ?>
+          <?php 
+            $src = filter_var($img['image_url'], FILTER_VALIDATE_URL)
+                 ? $img['image_url']
+                 : BASE_URL . ltrim($img['image_url'],'/');
+          ?>
+          <img src="<?= htmlspecialchars($src) ?>"
+               class="img-thumbnail"
+               style="width:100px;">
+        <?php endforeach; ?>
+      <?php else: ?>
+        <span class="text-muted">Chưa có ảnh</span>
+      <?php endif; ?>
+    </div>
+  </div>
+
+  <!-- Upload thêm file -->
+  <div class="mb-3">
+    <label class="form-label">Upload thêm ảnh (file)</label>
+    <input type="file"
+           name="images[]"
+           multiple
+           accept="image/*"
+           class="form-control">
+  </div>
+
+  <!-- Link hoặc data URI -->
+  <div class="mb-3">
+    <label class="form-label">Thêm link hoặc data URI (mỗi dòng 1)</label>
+    <textarea name="external_images"
+              class="form-control"
+              rows="3"
+              placeholder="https://...jpg
+data:image/png;base64,..."><?= htmlspecialchars($_SESSION['old']['external_images'] ?? '') ?></textarea>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Cập nhật</button>
+  <a href="<?= BASE_URL_ADMIN ?>&action=product-index" class="btn btn-secondary">Hủy</a>
 </form>
+
+<?php
+// Xoá session giữ lỗi/old
+unset($_SESSION['errors'], $_SESSION['old']);
+?>
