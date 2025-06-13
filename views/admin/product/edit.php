@@ -1,12 +1,11 @@
 <?php /*** views/admin/product/edit.php ***/ ?>
 
 <h2>Sửa sản phẩm #<?= $product['id'] ?></h2>
-
 <form method="post"
       action="<?= BASE_URL_ADMIN ?>&action=product-update&id=<?= $product['id'] ?>"
       enctype="multipart/form-data">
 
-  <!-- Tên sản phẩm -->
+  <!-- Tên -->
   <div class="mb-3">
     <label class="form-label">Tên sản phẩm</label>
     <input type="text"
@@ -37,24 +36,19 @@
   <!-- Mô tả -->
   <div class="mb-3">
     <label class="form-label">Mô tả</label>
-    <textarea name="description"
-              class="form-control"
-              rows="4"><?= htmlspecialchars($_SESSION['old']['description'] ?? $product['description']) ?></textarea>
+    <textarea name="description" class="form-control" rows="4"><?= htmlspecialchars($_SESSION['old']['description'] ?? $product['description']) ?></textarea>
   </div>
 
   <!-- Danh mục -->
   <div class="mb-3">
     <label class="form-label">Danh mục</label>
-    <select name="category_id"
-            class="form-select <?= isset($_SESSION['errors']['category_id'])?'is-invalid':'' ?>">
-      <?php 
-        $selCat = $_SESSION['old']['category_id'] ?? $product['category_id'];
-        foreach($categories as $c): 
-      ?>
-        <option value="<?= $c['id'] ?>" <?= ($selCat == $c['id'])?'selected':'' ?>>
+    <select name="category_id" class="form-select <?= isset($_SESSION['errors']['category_id'])?'is-invalid':'' ?>">
+      <?php $sel = $_SESSION['old']['category_id'] ?? $product['category_id']; ?>
+      <?php foreach($categories as $c): ?>
+        <option value="<?= $c['id'] ?>" <?= $sel==$c['id']?'selected':'' ?>>
           <?= htmlspecialchars($c['name']) ?>
         </option>
-      <?php endforeach; ?>
+      <?php endforeach;?>
     </select>
     <?php if(isset($_SESSION['errors']['category_id'])):?>
       <div class="invalid-feedback">
@@ -64,19 +58,17 @@
   </div>
 
   <!-- Ảnh hiện tại -->
-  <div class="mb-4">
+  <div class="mb-3">
     <label class="form-label">Ảnh hiện tại</label>
     <div class="d-flex flex-wrap gap-2">
-      <?php if(!empty($images)): ?>
+      <?php if($images): ?>
         <?php foreach($images as $img): ?>
           <?php 
             $src = filter_var($img['image_url'], FILTER_VALIDATE_URL)
                  ? $img['image_url']
-                 : BASE_URL . ltrim($img['image_url'],'/');
+                 : BASE_ASSETS_UPLOADS . ltrim($img['image_url'],'/');
           ?>
-          <img src="<?= htmlspecialchars($src) ?>"
-               class="img-thumbnail"
-               style="width:100px;">
+          <img src="<?= htmlspecialchars($src) ?>" class="img-thumbnail" style="width:100px;">
         <?php endforeach; ?>
       <?php else: ?>
         <span class="text-muted">Chưa có ảnh</span>
@@ -87,28 +79,19 @@
   <!-- Upload thêm file -->
   <div class="mb-3">
     <label class="form-label">Upload thêm ảnh (file)</label>
-    <input type="file"
-           name="images[]"
-           multiple
-           accept="image/*"
-           class="form-control">
+    <input type="file" name="images[]" multiple accept="image/*" class="form-control">
   </div>
 
-  <!-- Link hoặc data URI -->
+  <!-- Link/data URI -->
   <div class="mb-3">
-    <label class="form-label">Thêm link hoặc data URI (mỗi dòng 1)</label>
-    <textarea name="external_images"
-              class="form-control"
-              rows="3"
-              placeholder="https://...jpg
+    <label class="form-label">Link hoặc data URI (mỗi dòng 1)</label>
+    <textarea name="external_images" class="form-control" rows="3"
+      placeholder="https://...jpg
 data:image/png;base64,..."><?= htmlspecialchars($_SESSION['old']['external_images'] ?? '') ?></textarea>
   </div>
 
-  <button type="submit" class="btn btn-primary">Cập nhật</button>
+  <button class="btn btn-primary">Cập nhật</button>
   <a href="<?= BASE_URL_ADMIN ?>&action=product-index" class="btn btn-secondary">Hủy</a>
 </form>
 
-<?php
-// Xoá session giữ lỗi/old
-unset($_SESSION['errors'], $_SESSION['old']);
-?>
+<?php unset($_SESSION['errors'], $_SESSION['old']); ?>

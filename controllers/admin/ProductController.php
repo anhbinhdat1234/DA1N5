@@ -16,43 +16,40 @@ class ProductController
         $this->imageModel = new ProductImage();
     }
 
+    // --- INDEX ---
     public function index()
     {
-        // 1. Chuẩn bị data
         $products = $this->product->getWithCategory();
         foreach ($products as &$p) {
             $imgs = $this->imageModel->findByProductId((int)$p['id']);
+            // nếu có upload hoặc link thì image_url đã lưu đầy đủ; ngược lại dùng placeholder
             $p['image_url'] = $imgs[0]['image_url'] 
                 ?? '/assets/client/assets/img/default.png';
         }
         unset($p);
 
-        // 2. Thiết lập view + title
         $view  = 'product/index';
         $title = 'Danh sách sản phẩm';
-
-        // 3. Include layout chính
         require_once PATH_VIEW_ADMIN_MAIN;
     }
 
+    // --- CREATE FORM ---
     public function create()
     {
         $categories = $this->category->select();
-
-        $view  = 'product/create';
-        $title = 'Thêm sản phẩm mới';
-
+        $view       = 'product/create';
+        $title      = 'Thêm sản phẩm mới';
         require_once PATH_VIEW_ADMIN_MAIN;
     }
 
+    // --- STORE NEW PRODUCT ---
     public function store()
     {
-        // Lấy data gốc
         $data = $_POST;
         $_SESSION['errors'] = [];
         $_SESSION['old']    = $data;
 
-        // 1) VALIDATION
+        // 1) Validation
         if (empty($data['name'])) {
             $_SESSION['errors']['name'] = 'Tên sản phẩm bắt buộc.';
         }
@@ -63,8 +60,8 @@ class ProductController
             $_SESSION['errors']['category_id'] = 'Chọn danh mục.';
         }
 
-        // Nếu lỗi, include lại form (không redirect)
         if (!empty($_SESSION['errors'])) {
+            // load lại form mà không redirect
             $view       = 'product/create';
             $title      = 'Thêm sản phẩm mới';
             $categories = $this->category->select();
@@ -73,7 +70,7 @@ class ProductController
         }
 
         try {
-            // 2) CHUẨN BỊ MẢNG CHÈN VÀO products
+            // 2) Chèn vào products
             $productData = [
                 'name'        => $data['name'],
                 'price'       => $data['price'],
@@ -81,18 +78,20 @@ class ProductController
                 'category_id' => $data['category_id'],
                 'created_at'  => date('Y-m-d H:i:s'),
             ];
-
-            // 3) Insert và lấy ID mới
             $newId = $this->product->insertGetId($productData);
 
-            // 4) XỬ LÝ FILE UPLOAD
+            // 3) Upload file ảnh
+            $uploadDir = PATH_ASSETS_UPLOADS . 'products/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0775, true);
+            }
             if (!empty($_FILES['images'])) {
                 $files = $_FILES['images'];
                 for ($i = 0; $i < count($files['name']); $i++) {
                     if ($files['error'][$i] === UPLOAD_ERR_OK) {
                         $ext  = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
                         $fn   = uniqid('prod_') . ".$ext";
-                        $dest = PATH_ASSETS_UPLOADS . "products/$fn";
+                        $dest = $uploadDir . $fn;
                         if (in_array(strtolower($ext), ['jpg','jpeg','png','gif'])) {
                             move_uploaded_file($files['tmp_name'][$i], $dest);
                             $this->imageModel->create([
@@ -104,9 +103,10 @@ class ProductController
                 }
             }
 
-            // 5) XỬ LÝ EXTERNAL-URL & DATA-URI
+            // 4) External URLs và data URIs
             if (!empty($data['external_images'])) {
-                foreach (explode("\n", trim($data['external_images'])) as $line) {
+                $lines = explode("\n", trim($data['external_images']));
+                foreach ($lines as $line) {
                     $url    = trim($line);
                     $isHttp = filter_var($url, FILTER_VALIDATE_URL);
                     $isData = preg_match('#^data:image/[a-zA-Z]+;base64,#', $url);
@@ -121,40 +121,38 @@ class ProductController
 
             $_SESSION['success'] = true;
             $_SESSION['msg']     = 'Thêm sản phẩm thành công!';
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $_SESSION['success'] = false;
             $_SESSION['msg']     = 'Lỗi hệ thống: ' . $e->getMessage();
         }
 
-        // 6) Cleanup và redirect
         unset($_SESSION['errors'], $_SESSION['old']);
         header('Location: ' . BASE_URL_ADMIN . '&action=product-index');
         exit;
     }
 
-
-
+    // --- EDIT FORM ---
     public function edit()
     {
         $id         = (int)($_GET['id'] ?? 0);
-        $product    = $this->product->find('*', 'id = :id', ['id' => $id]);
+        $product    = $this->product->find('*','id=:id',['id'=>$id]);
         $categories = $this->category->select();
         $images     = $this->imageModel->findByProductId($id);
 
         $view  = 'product/edit';
         $title = "Sửa sản phẩm #$id";
-
         require_once PATH_VIEW_ADMIN_MAIN;
     }
 
-public function update()
+    // --- UPDATE PRODUCT ---
+    public function update()
     {
-        $id = (int)($_GET['id'] ?? 0);
+        $id   = (int)($_GET['id'] ?? 0);
         $data = $_POST;
         $_SESSION['errors'] = [];
         $_SESSION['old']    = $data;
 
-        // 1) VALIDATION
+        // Validation
         if (empty($data['name'])) {
             $_SESSION['errors']['name'] = 'Tên sản phẩm bắt buộc.';
         }
@@ -163,10 +161,10 @@ public function update()
         }
 
         if (!empty($_SESSION['errors'])) {
-            // Load lại form edit với errors + old data
+            // reload form
             $view       = 'product/edit';
             $title      = "Sửa sản phẩm #$id";
-            $product    = $this->product->find('*', 'id = :id', ['id' => $id]);
+            $product    = $this->product->find('*','id=:id',['id'=>$id]);
             $categories = $this->category->select();
             $images     = $this->imageModel->findByProductId($id);
             require_once PATH_VIEW_ADMIN_MAIN;
@@ -174,26 +172,27 @@ public function update()
         }
 
         try {
-            // 2) Chuẩn bị mảng cập nhật
+            // Update products
             $updateData = [
                 'name'        => $data['name'],
                 'price'       => $data['price'],
                 'description' => $data['description'] ?? null,
                 'category_id' => $data['category_id'],
-                'updated_at'  => date('Y-m-d H:i:s'),
             ];
+            $this->product->update($updateData,'id=:id',['id'=>$id]);
 
-            // 3) Cập nhật bảng products
-            $this->product->update($updateData, 'id = :id', ['id' => $id]);
-
-            // 4) Upload file mới (nếu có)
+            // Upload thêm file
+            $uploadDir = PATH_ASSETS_UPLOADS . 'products/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0775, true);
+            }
             if (!empty($_FILES['images'])) {
                 $files = $_FILES['images'];
                 for ($i = 0; $i < count($files['name']); $i++) {
                     if ($files['error'][$i] === UPLOAD_ERR_OK) {
                         $ext  = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
                         $fn   = uniqid('prod_') . ".$ext";
-                        $dest = PATH_ASSETS_UPLOADS . "products/$fn";
+                        $dest = $uploadDir . $fn;
                         if (in_array(strtolower($ext), ['jpg','jpeg','png','gif'])) {
                             move_uploaded_file($files['tmp_name'][$i], $dest);
                             $this->imageModel->create([
@@ -205,9 +204,10 @@ public function update()
                 }
             }
 
-            // 5) Xử lý external_images
+            // Thêm external/data-uri
             if (!empty($data['external_images'])) {
-                foreach (explode("\n", trim($data['external_images'])) as $line) {
+                $lines = explode("\n", trim($data['external_images']));
+                foreach ($lines as $line) {
                     $url    = trim($line);
                     $isHttp = filter_var($url, FILTER_VALIDATE_URL);
                     $isData = preg_match('#^data:image/[a-zA-Z]+;base64,#', $url);
@@ -222,7 +222,7 @@ public function update()
 
             $_SESSION['success'] = true;
             $_SESSION['msg']     = 'Cập nhật thành công!';
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $_SESSION['success'] = false;
             $_SESSION['msg']     = 'Lỗi hệ thống: ' . $e->getMessage();
         }
@@ -232,7 +232,7 @@ public function update()
         exit;
     }
 
-
+    // --- SHOW DETAIL ---
     public function show()
     {
         $id      = (int)($_GET['id'] ?? 0);
@@ -240,30 +240,21 @@ public function update()
         $images  = $this->imageModel->findByProductId($id);
 
         $view  = 'product/show';
-        $title = "Chi tiết sản phẩm #$id";
-
+        $title = "Chi tiết #$id";
         require_once PATH_VIEW_ADMIN_MAIN;
     }
 
-public function delete()
-{
-    $id = (int)($_GET['id'] ?? 0);
-
-    if (!$id) {
-        $_SESSION['success'] = false;
-        $_SESSION['msg']     = 'Thiếu ID sản phẩm!';
-    } else {
-        // Gọi method mới để xóa cả product, variants và images trong transaction
+    // --- DELETE WITH CASCADE LOGIC ---
+    public function delete()
+    {
+        $id = (int)($_GET['id'] ?? 0);
         $ok = $this->product->deleteProductWithRelations($id);
 
         $_SESSION['success'] = $ok;
         $_SESSION['msg']     = $ok
-            ? 'Xóa sản phẩm thành công!'
-            : 'Xóa thất bại! Vui lòng thử lại hoặc kiểm tra ràng buộc.';
+            ? 'Xóa thành công!'
+            : 'Xóa thất bại!';
+        header('Location: ' . BASE_URL_ADMIN . '&action=product-index');
+        exit;
     }
-
-    header('Location: ' . BASE_URL_ADMIN . '&action=product-index');
-    exit;
-}
-
 }
