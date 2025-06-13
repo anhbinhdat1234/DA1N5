@@ -232,5 +232,22 @@ class BaseModel
 
         return $stmt->rowCount();
     }
+        public function insertGetId(array $data): int
+    {
+        $cols         = array_keys($data);
+        $placeholders = array_map(fn($c) => ":$c", $cols);
 
+        $sql  = "INSERT INTO {$this->table} ("
+              . implode(', ', $cols)
+              . ") VALUES ("
+              . implode(', ', $placeholders)
+              . ")";
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($data as $k => $v) {
+            $stmt->bindValue(":$k", $v);
+        }
+        $stmt->execute();
+
+        return (int)$this->pdo->lastInsertId();
+    }
 }

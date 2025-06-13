@@ -13,7 +13,6 @@
             // //Slider
             $sliderModel = new Slider();
             $sliders = $sliderModel->allOrdered();
-            // var_dump($sliders);
             //Categories
             $categoryModel = new Category();
 

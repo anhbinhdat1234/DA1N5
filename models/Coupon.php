@@ -94,4 +94,11 @@ class Coupon extends BaseModel
           "UPDATE {$this->table} SET used = used+1 WHERE id=:id"
         )->execute([':id'=>$id]);
     }
+    //TỔNG SỐ COUPON
+  //   public function count(): int
+  // {
+  //     $stmt = $this->pdo->query("SELECT COUNT(*) FROM {$this->table}");
+  //     return (int)$stmt->fetchColumn();
+  // }
+
 }

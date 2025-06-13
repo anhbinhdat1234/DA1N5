@@ -38,4 +38,22 @@ class Category extends BaseModel
     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
   }
 
+  //thống kê
+
+  public function getAllWithProductCount(): array
+    {
+        $sql = "
+            SELECT 
+                c.*,
+                COUNT(p.id) AS product_count
+            FROM {$this->table} c
+            LEFT JOIN products p ON p.category_id = c.id
+            GROUP BY c.id
+            ORDER BY c.name
+        ";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

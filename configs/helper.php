@@ -22,7 +22,7 @@ if (!function_exists('upload_file')) {
     }
 }
 
-// debug code nha :V
+// debug code nha :v
 if (!function_exists('dd')) {
     function dd($data)
     {
