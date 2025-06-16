@@ -30,7 +30,12 @@ $adminActions = [
     'orders-index',
     'orders-show',
     'orders-delete',
-    'orders-update-status'
+    'orders-update-status',
+
+    // Review (Bình luận)
+    'review-index',
+    'review-toggle-hidden',
+    'review-delete',
 ];
 
 // Nếu chưa đăng nhập admin thì chỉ cho phép truy cập login
@@ -48,6 +53,8 @@ require_once PATH_CONTROLLER_ADMIN . 'AuthenController.php';
 require_once PATH_CONTROLLER_ADMIN . 'UserController.php';
 require_once PATH_CONTROLLER_ADMIN . 'ProductController.php';
 require_once PATH_CONTROLLER_ADMIN . 'OrderController.php';
+require_once PATH_CONTROLLER_ADMIN . 'ReviewController.php';
+
 
 // Routing admin actions
 match ($action) {
@@ -82,6 +89,11 @@ match ($action) {
     'orders-show'          => (new OrderController())->show(),
     'orders-delete'        => (new OrderController())->delete(),
     'orders-update-status' => (new OrderController())->updateStatus(),
+    // Bình luận
+    'review-index'         => (new ReviewController())->index(),
+    'review-toggle-hidden' => (new ReviewController())->toggleHidden(),
+    'review-delete'        => (new ReviewController())->delete(),
+
 
     default => (new DashboardController())->index(),
 };

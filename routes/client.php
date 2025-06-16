@@ -3,6 +3,7 @@ $action = $_GET['action'] ?? '/';
 
 match ($action) {
     '/' => (new HomeController)->index(),
+    
     //Login, Register, Logout
     'login_form'    => (new AuthController())->showLoginForm(),
     'login'         => (new AuthController())->login(),
