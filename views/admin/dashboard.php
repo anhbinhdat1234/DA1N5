@@ -21,6 +21,10 @@
                     </li>
                     <li class="nav-item">
                         <!-- Liên kết đến trang quản lý sản phẩm -->
+                        <a class="nav-link text-white" href="<?= BASE_URL_ADMIN . '&action=categories-index' ?>">📦 Quản lý Danh mục</a>
+                    </li>
+                    <li class="nav-item">
+                        <!-- Liên kết đến trang quản lý sản phẩm -->
                         <a class="nav-link text-white" href="<?= BASE_URL_ADMIN . '&action=product-index' ?>">📦 Quản lý Sản phẩm</a>
                     </li>
                     <li class="nav-item">

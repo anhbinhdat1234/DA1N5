@@ -16,6 +16,8 @@ $adminActions = [
     'users-edit',
     'users-update',
     'users-delete',
+    //Category
+    'categories-create',
 
     // Product
     'product-index',
@@ -60,6 +62,8 @@ require_once PATH_VIEW_ADMIN . 'layout/header.php';
 require_once PATH_CONTROLLER_ADMIN . 'DashboardController.php';
 require_once PATH_CONTROLLER_ADMIN . 'AuthenController.php';
 require_once PATH_CONTROLLER_ADMIN . 'UserController.php';
+require_once PATH_CONTROLLER_ADMIN . 'CategoryController.php';
+
 require_once PATH_CONTROLLER_ADMIN . 'ProductController.php';
 require_once PATH_CONTROLLER_ADMIN . 'OrderController.php';
 require_once PATH_CONTROLLER_ADMIN . 'ReviewController.php';
@@ -85,6 +89,8 @@ match ($action) {
     'users-edit'   => (new UserController())->edit(),
     'users-update' => (new UserController())->update(),
     'users-delete' => (new UserController())->delete(),
+    //Category
+    'categories-index' => (new CategoryController())->index(),
 
     // Product
     'product-index'  => (new ProductController())->index(),
