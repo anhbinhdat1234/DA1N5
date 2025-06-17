@@ -36,6 +36,15 @@ $adminActions = [
     'review-index',
     'review-toggle-hidden',
     'review-delete',
+
+    // Slider
+    'sliders-index',
+    'sliders-show',
+    'sliders-create',
+    'sliders-store',
+    'sliders-edit',
+    'sliders-update',
+    'sliders-delete',
 ];
 
 // Nếu chưa đăng nhập admin thì chỉ cho phép truy cập login
@@ -54,6 +63,8 @@ require_once PATH_CONTROLLER_ADMIN . 'UserController.php';
 require_once PATH_CONTROLLER_ADMIN . 'ProductController.php';
 require_once PATH_CONTROLLER_ADMIN . 'OrderController.php';
 require_once PATH_CONTROLLER_ADMIN . 'ReviewController.php';
+require_once PATH_CONTROLLER_ADMIN . 'SliderController.php';
+
 
 
 // Routing admin actions
@@ -93,6 +104,16 @@ match ($action) {
     'review-index'         => (new ReviewController())->index(),
     'review-toggle-hidden' => (new ReviewController())->toggleHidden(),
     'review-delete'        => (new ReviewController())->delete(),
+
+    // Slider
+    'sliders-index'  => (new SliderController())->index(),
+    // 'sliders-show'   => (new SliderController())->show(),
+    'sliders-create' => (new SliderController())->create(),
+    'sliders-store'  => (new SliderController())->store(),
+    // 'sliders-edit'   => (new SliderController())->edit(),
+    // 'sliders-update' => (new SliderController())->update(),
+    // 'sliders-delete' => (new SliderController())->delete(),
+
 
 
     default => (new DashboardController())->index(),

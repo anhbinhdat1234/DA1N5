@@ -12,7 +12,7 @@
             $newArrivals = $productModel->newArrivalsProduct(8);
             // //Slider
             $sliderModel = new Slider();
-            $sliders = $sliderModel->allOrdered();
+            $sliders = $sliderModel->all();
             //Categories
             $categoryModel = new Category();
 
