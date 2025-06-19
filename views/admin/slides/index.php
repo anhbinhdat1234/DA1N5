@@ -1,4 +1,6 @@
-<div class="container mt-4">
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/sidebar.php'; ?>
+
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Danh sách Banner</h2>
         <a href="<?= BASE_URL_ADMIN ?>&action=sliders-create" class="btn btn-primary">Thêm mới</a>
@@ -31,4 +33,5 @@
             <?php endforeach ?>
         </tbody>
     </table>
-</div>
+
+<?php require_once __DIR__ . '/../layout/footer.php'; ?>

@@ -1,4 +1,6 @@
-<?php
+
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/sidebar.php'; ?><?php
 $userId = $_SESSION['user']['id'] ?? 0;
 $role   = $_SESSION['user']['role'] ?? 'user';
 ?>
@@ -76,3 +78,4 @@ $role   = $_SESSION['user']['role'] ?? 'user';
     </div>
   </div>
 </div>
+<?php require_once __DIR__ . '/../layout/footer.php'; ?>

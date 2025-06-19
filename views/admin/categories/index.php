@@ -1,4 +1,5 @@
-<div class="container mt-4">
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/sidebar.php'; ?>
     <div class="mx-auto" style="width: 98%;">
 
         <h2 class="mb-4">Danh sách danh mục</h2>
@@ -40,4 +41,4 @@
         </div>
         
     </div>
-</div>
+<?php require_once __DIR__ . '/../layout/footer.php'; ?>

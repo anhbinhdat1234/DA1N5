@@ -1,4 +1,5 @@
-<div class="container mt-4">
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/sidebar.php'; ?>
     <h2 class="mb-4"><?= isset($slider) ? 'Cập nhật Banner' : 'Thêm Banner mới' ?></h2>
 
     <form method="POST" enctype="multipart/form-data" action="index.php?mode=admin&action=<?= isset($slider) ? 'sliders-update&id=' . $slider['id'] : 'sliders-store' ?>">
@@ -36,4 +37,4 @@
             <a href="<?= BASE_URL_ADMIN ?>&action=sliders-index" class="btn btn-secondary">⬅ Quay lại</a>
         </div>
     </form>
-</div>
+<?php require_once __DIR__ . '/../layout/footer.php'; ?>
