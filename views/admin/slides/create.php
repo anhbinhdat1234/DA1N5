@@ -1,42 +1,39 @@
-<?php require_once PATH_VIEW_ADMIN . 'layout/header.php'; ?>
+<div class="container mt-4">
+    <h2 class="mb-4"><?= isset($slider) ? 'Cập nhật Banner' : 'Thêm Banner mới' ?></h2>
 
-<div class="container my-4">
-    <h2><?= isset($slider) ? 'Cập nhật Slider' : 'Thêm Slider mới' ?></h2>
-
-    <form method="POST" enctype="multipart/form-data"
-        action="index.php?controller=slider&action=<?= isset($slider) ? 'update&id=' . $slider['id'] : 'store' ?>">
+    <form method="POST" enctype="multipart/form-data" action="index.php?mode=admin&action=<?= isset($slider) ? 'sliders-update&id=' . $slider['id'] : 'sliders-store' ?>">
         
-        <div class="form-group mb-3">
-            <label>Tiêu đề</label>
-            <input type="text" name="title" class="form-control" value="<?= $slider['title'] ?? '' ?>" required>
+        <div class="mb-3">
+            <label for="title" class="form-label">Tiêu đề</label>
+            <input type="text" class="form-control" id="title" name="title" value="<?= $slider['title'] ?? '' ?>" required>
         </div>
 
-        <div class="form-group mb-3">
-            <label>Phụ đề</label>
-            <input type="text" name="subtitle" class="form-control" value="<?= $slider['subtitle'] ?? '' ?>">
+        <div class="mb-3">
+            <label for="subtitle" class="form-label">Phụ đề</label>
+            <input type="text" class="form-control" id="subtitle" name="subtitle" value="<?= $slider['subtitle'] ?? '' ?>">
         </div>
 
-        <div class="form-group mb-3">
-            <label>Link</label>
-            <input type="text" name="link" class="form-control" value="<?= $slider['link'] ?? '' ?>">
+        <div class="mb-3">
+            <label for="link" class="form-label">Liên kết</label>
+            <input type="text" class="form-control" id="link" name="link" value="<?= $slider['link'] ?? '' ?>">
         </div>
 
-        <div class="form-group mb-3">
-            <label>Thứ tự hiển thị</label>
-            <input type="number" name="sort_order" class="form-control" value="<?= $slider['sort_order'] ?? 0 ?>">
-        </div>
-
-        <div class="form-group mb-3">
-            <label>Ảnh</label>
-            <input type="file" name="image_url" class="form-control">
+        <div class="mb-3">
+            <label for="image_url" class="form-label">Ảnh</label><br>
             <?php if (!empty($slider['image_url'])): ?>
-                <img src="<?= $slider['image_url'] ?>" width="150" class="mt-2 border rounded">
+                <img src="<?= $slider['image_url'] ?>" alt="Ảnh hiện tại" class="img-thumbnail mb-2" width="150"><br>
             <?php endif ?>
+            <input class="form-control" type="file" name="image_url" id="image_url">
         </div>
 
-        <button type="submit" class="btn btn-primary">Lưu</button>
-        <a href="index.php?controller=slider&action=index" class="btn btn-secondary">Quay lại</a>
+        <div class="mb-3">
+            <label for="sort_order" class="form-label">Thứ tự hiển thị</label>
+            <input type="number" class="form-control" id="sort_order" name="sort_order" value="<?= $slider['sort_order'] ?? 0 ?>">
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-success">💾 Lưu</button>
+            <a href="<?= BASE_URL_ADMIN ?>&action=sliders-index" class="btn btn-secondary">⬅ Quay lại</a>
+        </div>
     </form>
 </div>
-
-<?php require_once PATH_VIEW_ADMIN . 'layout/footer.php'; ?>

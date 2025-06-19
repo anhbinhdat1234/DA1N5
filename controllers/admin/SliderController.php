@@ -19,11 +19,12 @@ class SliderController {
 
     public function store() {
         $data = [
-            'title' => $_POST['title'],
-            'subtitle' => $_POST['subtitle'],
-            'link' => $_POST['link'],
-            'sort_order' => $_POST['sort_order'],
+            'title' => $_POST['title'] ?? '',
+            'subtitle' => $_POST['subtitle'] ?? '',
+            'link' => $_POST['link'] ?? '',
+            'sort_order' => $_POST['sort_order'] ?? 0,
         ];
+
 
         if (!empty($_FILES['image_url']['name'])) {
             $fileName = time() . '-' . basename($_FILES['image_url']['name']);

@@ -112,14 +112,12 @@ match ($action) {
     'review-delete'        => (new ReviewController())->delete(),
 
     // Slider
-    'sliders-index'  => (new SliderController())->index(),
-    // 'sliders-show'   => (new SliderController())->show(),
-    'sliders-create' => (new SliderController())->create(),
-    'sliders-store'  => (new SliderController())->store(),
-    // 'sliders-edit'   => (new SliderController())->edit(),
-    // 'sliders-update' => (new SliderController())->update(),
-    // 'sliders-delete' => (new SliderController())->delete(),
-
+    'sliders-index'   => (new SliderController())->index(),
+    'sliders-create'  => (new SliderController())->create(),
+    'sliders-store'   => (new SliderController())->store(),
+    'sliders-edit'    => (new SliderController())->edit($_GET['id']),
+    'sliders-update'  => (new SliderController())->update($_GET['id']),
+    'sliders-delete'  => (new SliderController())->delete($_GET['id']),
 
 
     default => (new DashboardController())->index(),

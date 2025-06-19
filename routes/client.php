@@ -39,8 +39,7 @@ match ($action) {
     'submit_checkout' => (new CheckoutController())->submit(),
     'thank_you'       => (new CheckoutController())->thankYou(),
 
-    // 👉 Thêm xử lý cho action 'create'
-    'create' => (new SliderController())->create(), // hoặc controller tương ứng
+   
 
     // 👉 Default để tránh lỗi khi không khớp action nào
     default => (new HomeController())->index(),
