@@ -6,10 +6,7 @@
         <!-- Thanh điều hướng bên trái với các liên kết quản trị -->
         <aside class="col-md-2 bg-dark text-white p-0">
             <div class="d-flex flex-column min-vh-100">
-                <div class="p-3 border-bottom">
-                    <!-- Tiêu đề cho sidebar -->
-                    <h4 class="text-center">Quản trị viên</h4>
-                </div>
+                
                 <ul class="nav flex-column p-3">
                     <li class="nav-item">
                         <!-- Liên kết đến trang chủ dashboard -->
