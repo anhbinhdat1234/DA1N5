@@ -25,12 +25,15 @@ class SliderController {
             'sort_order' => $_POST['sort_order'] ?? 0,
         ];
 
-
         if (!empty($_FILES['image_url']['name'])) {
+            if (!file_exists('uploads')) {
+                mkdir('uploads', 0777, true);
+            }
+
             $fileName = time() . '-' . basename($_FILES['image_url']['name']);
             $targetPath = 'uploads/' . $fileName;
             move_uploaded_file($_FILES['image_url']['tmp_name'], $targetPath);
-            $data['image_url'] = $targetPath;
+            $data['image_url'] = '/' . $targetPath; // <-- Thêm dấu /
         }
 
         $this->sliderModel->create($data);
@@ -50,11 +53,15 @@ class SliderController {
             'sort_order' => $_POST['sort_order'],
         ];
 
+        // Nếu có ảnh mới thì dùng ảnh mới
         if (!empty($_FILES['image_url']['name'])) {
             $fileName = time() . '-' . basename($_FILES['image_url']['name']);
             $targetPath = 'uploads/' . $fileName;
             move_uploaded_file($_FILES['image_url']['tmp_name'], $targetPath);
             $data['image_url'] = $targetPath;
+        } else {
+            // Không chọn ảnh mới thì giữ nguyên ảnh cũ
+            $data['image_url'] = $_POST['old_image_url'] ?? '';
         }
 
         $this->sliderModel->updateById($id, $data);

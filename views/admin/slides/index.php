@@ -22,7 +22,8 @@
                     <td><?= $slider['id'] ?></td>
                     <td><?= htmlspecialchars($slider['title']) ?></td>
                     <td>
-                        <img src="<?= $slider['image_url'] ?>" alt="Slider Image" width="100" class="img-thumbnail">
+                        <img src="<?= BASE_URL . '/' . $slider['image_url'] ?>" alt="Slider Image" width="100" class="img-thumbnail">
+
                     </td>
                     <td><?= $slider['sort_order'] ?></td>
                     <td>

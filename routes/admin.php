@@ -18,6 +18,11 @@ $adminActions = [
     'users-delete',
     //Category
     'categories-create',
+    'categories-create',
+    'categories-store',
+    'categories-edit',
+    'categories-update',
+    'categories-delete',
 
     // Product
     'product-index',
@@ -91,6 +96,11 @@ match ($action) {
     'users-delete' => (new UserController())->delete(),
     //Category
     'categories-index' => (new CategoryController())->index(),
+    'categories-create' => (new CategoryController())->create(),
+    'categories-store'  => (new CategoryController())->store(),
+    'categories-edit'   => (new CategoryController())->edit($_GET['id']),
+    'categories-update' => (new CategoryController())->update($_GET['id']),
+    'categories-delete' => (new CategoryController())->delete($_GET['id']),
 
     // Product
     'product-index'  => (new ProductController())->index(),

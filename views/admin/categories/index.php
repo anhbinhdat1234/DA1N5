@@ -1,44 +1,45 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 <?php require_once __DIR__ . '/../layout/sidebar.php'; ?>
-    <div class="mx-auto" style="width: 98%;">
 
-        <h2 class="mb-4">Danh sách danh mục</h2>
+<div class="mx-auto" style="width: 98%;">
+    <h2 class="mb-4">Danh sách danh mục</h2>
 
-        <a href="index.php?action=categories-create" class="btn btn-success mb-3">Thêm danh mục</a>
+<a href="<?= BASE_URL_ADMIN ?>&action=categories-create" class="btn btn-success mb-3" >+ Thêm danh mục</a>
+    <?php if (isset($_GET['success'])): ?>
+        <div class="alert alert-success">✅ Thao tác thành công!</div>
+    <?php endif ?>
 
-        <?php if (isset($_GET['success'])): ?>
-            <div class="alert alert-success">Thao tác thành công!</div>
-        <?php endif ?>
-
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-                <thead class="table-dark">
-                    <tr>
-                        <th>STT</th>
-                        <th>Tên danh mục</th>
-                        <th>Ảnh</th>
-                        <th>Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($categories as $i => $category): ?>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Tên danh mục</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($categories)): ?>
+                    <?php foreach ($categories as $index => $category): ?>
                         <tr>
-                            <td><?= $i + 1 ?></td>
-                            <td><?= $category['name'] ?></td>
+                            <td><?= $index + 1 ?></td>
+                            <td><?= htmlspecialchars($category['name']) ?></td>
+                            
                             <td>
-                                <?php if (!empty($category['image_url'])): ?>
-                                    <img src="<?= $category['image_url'] ?>" alt="Category Image" class="img-thumbnail" style="width: 100px;">
-                                <?php endif ?>
-                            </td>
-                            <td>
-                                <a href="index.php?action=categories-edit&id=<?= $category['id'] ?>" class="btn btn-sm btn-primary">Sửa</a>
-                                <a href="index.php?action=categories-delete&id=<?= $category['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Xóa danh mục này?')">Xóa</a>
+<a href="<?= BASE_URL_ADMIN ?>&action=categories-edit&id=<?= $category['id'] ?>" class="btn btn-sm btn-primary">Sửa</a>
+<a href="<?= BASE_URL_ADMIN ?>&action=categories-delete&id=<?= $category['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xoá?')">Xoá</a>
+
                             </td>
                         </tr>
                     <?php endforeach ?>
-                </tbody>
-            </table>
-        </div>
-        
+                <?php else: ?>
+                    <tr>
+                        <td colspan="4">Không có danh mục nào.</td>
+                    </tr>
+                <?php endif ?>
+            </tbody>
+        </table>
     </div>
+</div>
+
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

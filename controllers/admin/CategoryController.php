@@ -14,48 +14,53 @@ class CategoryController {
     }
 
     public function create() {
-        require 'views/admin/categories/create.php';
+        require PATH_VIEW_ADMIN . 'categories/create.php';
     }
 
     public function store() {
-        $data = [
-            'name' => $_POST['name'],
-        ];
-
-        if (!empty($_FILES['image_url']['name'])) {
-            $filename = time() . '-' . basename($_FILES['image_url']['name']);
-            $target = 'uploads/' . $filename;
-            move_uploaded_file($_FILES['image_url']['tmp_name'], $target);
-            $data['image_url'] = $target;
-        }
-
-        $this->categoryModel->insert($data);
-        header('Location: index.php?action=categories-index&success=1');
+        $data = ['name' => $_POST['name']];
+        $this->categoryModel->create($data);
+        header('Location: ' . BASE_URL_ADMIN . '&action=categories-index&success=1');
     }
 
     public function edit($id) {
-        $category = $this->categoryModel->find('*', 'id = :id', ['id' => $id]);
-        require 'views/admin/categories/create.php';
+    // Kiểm tra ID tồn tại
+    if (!$id || !is_numeric($id)) {
+        header('Location: ' . BASE_URL_ADMIN . '&action=categories-index&error=ID không hợp lệ');
+        exit();
     }
+
+    // Lấy dữ liệu danh mục
+    $category = $this->categoryModel->findById($id);
+    
+    if (!$category) {
+        header('Location: ' . BASE_URL_ADMIN . '&action=categories-index&error=Không tìm thấy danh mục');
+        exit();
+    }
+
+    require PATH_VIEW_ADMIN . 'categories/edit.php';
+}
 
     public function update($id) {
-        $data = [
-            'name' => $_POST['name'],
-        ];
-
-        if (!empty($_FILES['image_url']['name'])) {
-            $filename = time() . '-' . basename($_FILES['image_url']['name']);
-            $target = 'uploads/' . $filename;
-            move_uploaded_file($_FILES['image_url']['tmp_name'], $target);
-            $data['image_url'] = $target;
-        }
-
-        $this->categoryModel->update($data, 'id = :id', ['id' => $id]);
-        header('Location: index.php?action=categories-index&success=1');
+        $data = ['name' => $_POST['name']];
+        $this->categoryModel->updateCategory($id, $data);
+        header('Location: ' . BASE_URL_ADMIN . '&action=categories-index&success=1');
     }
 
-    public function delete($id) {
-        $this->categoryModel->delete('id = :id', ['id' => $id]);
-        header('Location: index.php?action=categories-index&success=1');
+   public function delete($id) {
+    if (!$id || !is_numeric($id)) {
+        header('Location: ' . BASE_URL_ADMIN . '&action=categories-index&error=ID không hợp lệ');
+        exit();
     }
+
+    $category = $this->categoryModel->findById($id);
+    if (!$category) {
+        header('Location: ' . BASE_URL_ADMIN . '&action=categories-index&error=Không tìm thấy danh mục');
+        exit();
+    }
+
+    $this->categoryModel->deleteCategory($id);
+    header('Location: ' . BASE_URL_ADMIN . '&action=categories-index&success=1');
+}
+
 }
